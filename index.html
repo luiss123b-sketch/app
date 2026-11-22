@@ -364,6 +364,40 @@ window._normFechaLocal = function(val){
   return s.slice(0, 10);
 };
 </script>
+<style id='movil-v114-filtros'>
+@media (max-width: 959px) {
+  #filtroFecha, #filtroFechaHasta {
+    width: 52px !important;
+    max-width: 52px !important;
+    min-width: 52px !important;
+    font-size: 7.4px !important;
+    padding: 1px 2px !important;
+    height: 23px !important;
+    min-height: 23px !important;
+    letter-spacing: -0.3px !important;
+  }
+  #filtroFecha::-webkit-calendar-picker-indicator,
+  #filtroFechaHasta::-webkit-calendar-picker-indicator {
+    width: 10px !important;
+    height: 10px !important;
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+  #tabOrdenes > div:first-child button {
+    padding: 2px 5px !important;
+    font-size: 9px !important;
+    height: 23px !important;
+  }
+  #filtroEstadoOrd {
+    width: auto !important;
+    max-width: 112px !important;
+    font-size: 9.5px !important;
+    padding: 1px 3px !important;
+    height: 23px !important;
+    min-height: 23px !important;
+  }
+}
+</style>
 </head>
 <body>
 <header>
@@ -388,7 +422,7 @@ window._normFechaLocal = function(val){
   <div id="colDerechaPC"><div id="barraAdminPC" style="display:none;flex-wrap:wrap;gap:6px;margin-bottom:10px;align-items:center;"><button type="button" id="btnPcOrd" class="btn-yellow btn-sm" style="width:auto;padding:7px 13px;font-size:12.5px;font-weight:700;" onclick="document.getElementById('tabUsuariosAdmin')?.classList.add('hidden');document.getElementById('tabCuadre')?.classList.add('hidden');verTab('Ordenes',document.querySelectorAll('#navTabs .tab'))">📋 Órdenes</button><button type="button" class="btn-blue btn-sm solo-admin" style="width:auto;padding:7px 13px;font-size:12.5px;font-weight:700;" onclick="abrirSoloCuadres()">📊 Cuadres Diarios y Mensuales</button><button type="button" class="btn-blue btn-sm solo-admin" style="width:auto;padding:7px 13px;font-size:12.5px;font-weight:700;" onclick="abrirGestionUsuarios()">👥 Gestionar Admins / Usuarios</button><button type="button" class="btn-yellow btn-sm solo-admin" style="width:auto;padding:7px 13px;font-size:12.5px;font-weight:700;" onclick="cambiarClaveAdmin()">🔑 Mi Clave</button><button type="button" class="btn-red btn-sm solo-admin" style="width:auto;padding:7px 13px;font-size:12.5px;font-weight:700;" onclick="salirSinCuadrar()">🚪 Salir sin Cuadrar</button></div><div id="tabOrdenes">
     <div class="card" style="padding:10px">
       <div class="row"><select id="filtroSuc" onchange="cargarTickets()" style="flex:1"><option value="Medina">Medina</option><option value="Pinar Quemado">Pinar Quemado</option><option value="Todas">Todas</option></select><button class="btn-blue btn-sm" style="margin:0" onclick="cargarTickets()">Actualizar</button></div>
-      <input type="text" id="buscarTxt" placeholder="Buscar cliente, teléfono, equipo o #orden..." oninput="filtrarLocal()" onkeydown="if(event.key==='Enter'){event.preventDefault();buscarPorEnter();}" style="margin-top:8px"><div style="display:flex;gap:6px;margin-top:8px;align-items:center;"><button type="button" class="btn-green btn-sm" style="width:auto;padding:7px 12px;" onclick="filtrarFechaRapida('hoy')">Hoy</button><button type="button" class="btn-blue btn-sm" style="width:auto;padding:7px 12px;" onclick="filtrarFechaRapida('todas')">Todas</button><span style="display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;"><input type="date" id="filtroFecha" title="Desde fecha" onchange="filtrarLocal()" oninput="filtrarLocal()" style="width:112px !important;max-width:112px !important;height:28px !important;padding:2px 5px !important;font-size:11.5px !important;margin:0 !important;"><span style="font-size:10px;color:#9aa3b2;font-weight:700;">a</span><input type="date" id="filtroFechaHasta" title="Hasta fecha" onchange="filtrarLocal()" oninput="filtrarLocal()" style="width:112px !important;max-width:112px !important;height:28px !important;padding:2px 5px !important;font-size:11.5px !important;margin:0 !important;"></span><select id="filtroEstadoOrd" onchange="filtrarLocal()" style="width:auto;padding:6px 8px;font-size:12px;background:#121417;color:#f5b700;border:1px solid #2d333f;border-radius:7px;font-weight:700;"><option value="TODOS">Estado: Todos</option><option value="PENDIENTE">🔧 Pendiente por Reparar</option><option value="LISTO">✅ Listo</option><option value="ENTREGADO">📦 Entregado</option></select></div>
+      <input type="text" id="buscarTxt" placeholder="Buscar cliente, teléfono, equipo o #orden..." oninput="filtrarLocal()" onkeydown="if(event.key==='Enter'){event.preventDefault();buscarPorEnter();}" style="margin-top:8px"><div style="display:flex;gap:6px;margin-top:8px;align-items:center;"><button type="button" class="btn-green btn-sm" style="width:auto;padding:7px 12px;" onclick="filtrarFechaRapida('hoy')">Hoy</button><button type="button" class="btn-blue btn-sm" style="width:auto;padding:7px 12px;" onclick="filtrarFechaRapida('todas')">Todas</button><span style="display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;"><input type="date" id="filtroFecha" title="Desde fecha" onchange="filtrarLocal()" oninput="filtrarLocal()" style="width:110px;max-width:110px;height:28px !important;padding:2px 5px !important;font-size:11.5px !important;margin:0 !important;"><span style="font-size:10px;color:#9aa3b2;font-weight:700;">a</span><input type="date" id="filtroFechaHasta" title="Hasta fecha" onchange="filtrarLocal()" oninput="filtrarLocal()" style="width:110px;max-width:110px;height:28px !important;padding:2px 5px !important;font-size:11.5px !important;margin:0 !important;"></span><select id="filtroEstadoOrd" onchange="filtrarLocal()" style="width:auto;padding:6px 8px;font-size:12px;background:#121417;color:#f5b700;border:1px solid #2d333f;border-radius:7px;font-weight:700;"><option value="TODOS">Estado: Todos</option><option value="PENDIENTE">🔧 Pendiente por Reparar</option><option value="LISTO">✅ Listo</option><option value="ENTREGADO">📦 Entregado</option></select></div>
     </div>
     <div id="listaTickets"></div>
 <div style="position:sticky;bottom:6px;z-index:20;margin-top:8px;display:flex;justify-content:center;align-items:center;background:#161a23;padding:7px 14px;border-radius:10px;border:1px solid #2c3545;box-shadow:0 -4px 12px rgba(0,0,0,0.45);">
