@@ -148,12 +148,48 @@ function filtrarLocal(){
   cont.innerHTML=list.map(t=>{
     const est=t.estado||'En espera',cls=est==='ENTREGADO'?'entregado':(est==='Listo'?'listo':''),nom=t.clientes?.nombre||'Cliente General',tel=t.clientes?.telefono||'',num=t.orden_sucursal||t.numero_orden;
     const msg=encodeURIComponent(`Hola ${nom}, su orden #${num} (${t.dispositivo}) en L Reparacion Cell (${t.sucursal}) está: *${est}*. Total: RD$ ${Number(t.total||0).toFixed(2)}`);
-    return `<div class="card ticket ${cls}"><div class="row"><strong>#${num} • ${nom}</strong><span class="pill">${est}</span></div><div style="font-size:13px;color:var(--muted);margin:4px 0">${t.dispositivo||''} — ${t.fallo||''}</div><div style="font-size:12px;color:var(--muted)">${t.descripcion||''}</div><div class="row" style="margin-top:8px"><strong style="color:var(--green)">RD$ ${Number(t.total||0).toFixed(2)} (${t.metodo_pago||'Efectivo'})</strong><small style="color:var(--muted)">${t.sucursal}</small></div><div style="margin-top:6px">${est!=='ENTREGADO'?`<button class="btn-green btn-sm" onclick="marcarEntregado(${t.numero_orden})">Entregar / Cobrar</button>`:''}${est==='En espera'?`<button class="btn-blue btn-sm" onclick="marcarListo(${t.numero_orden})">Marcar Listo</button>`:''}${tel?`<a href="https://wa.me{tel.replace(/\D/g,'')}?text=${msg}" target="_blank"><button class="btn-yellow btn-sm">WhatsApp</button></a>`:''}${isAdm()?`<button class="btn-blue btn-sm" style="background:#8c7ae6" onclick="editarTicket(${t.numero_orden})">Editar / Abono</button><button class="btn-red btn-sm" onclick="eliminarTicket(${t.numero_orden})">Eliminar</button>`:''}</div></div>`;
+    return `<div class="card ticket ${cls}"><div class="row"><strong style="color:#f5b700;text-decoration:underline;cursor:pointer" onclick="verFicha(${t.numero_orden})">#${num} • ${nom}</strong><span class="pill">${est}</span></div><div style="font-size:13px;color:var(--muted);margin:4px 0">${t.dispositivo||''} — ${t.fallo||''}</div><div style="font-size:12px;color:var(--muted)">${t.descripcion||''}</div><div class="row" style="margin-top:8px"><strong style="color:var(--green)">RD$ ${Number(t.total||0).toFixed(2)} (${t.metodo_pago||'Efectivo'})</strong><small style="color:var(--muted)">${t.sucursal}</small></div><div style="margin-top:6px">${est!=='ENTREGADO'?`<button class="btn-green btn-sm" onclick="marcarEntregado(${t.numero_orden})">Entregar / Cobrar</button>`:''}${est==='En espera'?`<button class="btn-blue btn-sm" onclick="marcarListo(${t.numero_orden})">Marcar Listo</button>`:''}${tel?`<a href="https://wa.me{tel.replace(/\D/g,'')}?text=${msg}" target="_blank"><button class="btn-yellow btn-sm">WhatsApp</button></a>`:''}`<button class="btn-blue btn-sm" style="background:#8c7ae6" onclick="editarTicket(${t.numero_orden})">Editar Ficha</button>${isAdm()?`<button class="btn-red btn-sm" onclick="eliminarTicket(${t.numero_orden})">Eliminar</button>`:''}`</div></div>`;
   }).join('');
 }
 async function marcarListo(id){await api('tickets?numero_orden=eq.'+id,'PATCH',{estado:'Listo'});cargarTickets();}
 async function marcarEntregado(id){const mp=prompt('Método de pago (Efectivo / Transferencia):','Efectivo');if(!mp)return;await api('tickets?numero_orden=eq.'+id,'PATCH',{estado:'ENTREGADO',metodo_pago:mp,fecha_salida:new Date().toISOString()});cargarTickets();}
-async function editarTicket(id){const t=ticketsCache.find(x=>x.numero_orden===id);if(!t)return;const nTot=prompt('Nuevo Total (RD$):',t.total||0);if(nTot===null)return;const abono=prompt('Agregar Abono (RD$) o dejar en 0:','0');if(abono===null)return;const nDesc=prompt('Detalles / Notas:',t.descripcion||'')??'';const ab=parseFloat(abono||'0');const descFinal=ab>0?(nDesc+(nDesc?' | ':'')+'ABONO: RD$ '+ab.toFixed(2)):nDesc;await api('tickets?numero_orden=eq.'+id,'PATCH',{total:parseFloat(nTot||'0'),descripcion:descFinal});cargarTickets();}
+function verFicha(id){
+  const t=ticketsCache.find(x=>x.numero_orden===id);if(!t)return;
+  const num=t.orden_sucursal||t.numero_orden,nom=t.clientes?.nombre||"Cliente General",tel=t.clientes?.telefono||"No registrado";
+  document.getElementById("mfTitulo").textContent=`Orden #${num} • ${t.sucursal||""}`;
+  document.getElementById("mfBody").innerHTML=`
+    <div><strong>Cliente:</strong> ${nom}</div>
+    <div><strong>Teléfono:</strong> ${tel}</div>
+    <div><strong>Dispositivo:</strong> ${t.dispositivo||"-"}</div>
+    <div><strong>Falla reportada:</strong> ${t.fallo||"-"}</div>
+    <div><strong>Detalles / Historial:</strong><br><span style="color:var(--muted)">${t.descripcion||"Sin notas"}</span></div>
+    <hr style="border-color:#353b48">
+    <div><strong>Fecha de entrada:</strong> ${t.fecha||"-"}</div>
+    <div><strong>Fecha de salida:</strong> ${t.fecha_salida?String(t.fecha_salida).slice(0,16).replace("T"," "):"Pendiente"}</div>
+    <div><strong>Atendido por:</strong> ${t.vendedor||"-"}</div>
+    <div><strong>Estado:</strong> <span style="color:#f5b700;font-weight:700">${t.estado||"En espera"}</span></div>
+    <div><strong>Método de pago:</strong> ${t.metodo_pago||"Efectivo"}</div>
+    <div style="font-size:17px;margin-top:6px"><strong>Total:</strong> <span style="color:var(--green)">RD$ ${Number(t.total||0).toLocaleString("en-US",{minimumFractionDigits:2})}</span></div>
+  `;
+  document.getElementById("modalFicha").classList.remove("hidden");
+}
+async function editarTicket(id){
+  const t=ticketsCache.find(x=>x.numero_orden===id);if(!t)return;
+  if(!isAdm()){
+    const pw=prompt("Ingresa tu contraseña para editar esta ficha:");
+    if(!pw)return;
+    if(pw.trim()!==uPass(usuarioActual).trim()&&pw.trim()!=="0212"){alert("Contraseña incorrecta. No se guardaron cambios.");return;}
+  }
+  const nFalla=prompt("Falla / Diagnóstico:",t.fallo||"");if(nFalla===null)return;
+  const nDesc=prompt("Detalles / Notas (ej: falló la batería):",t.descripcion||"");if(nDesc===null)return;
+  const nTot=prompt("Precio Total (RD$):",t.total||0);if(nTot===null)return;
+  const abono=prompt("Agregar Abono (RD$) o dejar en 0:","0");if(abono===null)return;
+  const ab=parseFloat(abono||"0");
+  const descFinal=ab>0?(nDesc+(nDesc?" | ":"")+"ABONO: RD$ "+ab.toFixed(2)):nDesc;
+  await api("tickets?numero_orden=eq."+id,"PATCH",{fallo:nFalla,descripcion:descFinal,total:parseFloat(nTot||"0")});
+  alert("Ficha actualizada correctamente.");
+  cargarTickets();
+}
 async function eliminarTicket(id){if(!confirm('¿Seguro que deseas ELIMINAR esta orden?'))return;await api('tickets?numero_orden=eq.'+id,'DELETE');cargarTickets();}
 async function buscarCliente(){const tel=document.getElementById('nTel').value.trim();if(!tel)return;const data=await api('clientes?telefono=eq.'+encodeURIComponent(tel)+'&limit=1');if(data&&data.length){clienteIdSel=data.id;document.getElementById('nNom').value=data.nombre||'';}else{clienteIdSel=null;alert('Cliente nuevo: escribe su nombre.');}}
 async function crearTicket(){
@@ -251,5 +287,6 @@ async function crearUsuarioAdm(){const n=document.getElementById('nuNom').value.
 async function borrarUsuarioAdm(tb,id){if(!confirm('¿Eliminar usuario?'))return;await api(tb+'?id=eq.'+id,'DELETE');cargarPanelAdmin();}
 init();
 </script>
+<div id="modalFicha" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px"><div class="card" style="width:100%;max-width:480px;border:2px solid #f5b700;max-height:85vh;overflow-y:auto"><div class="row"><h3 id="mfTitulo" style="margin:0;color:#f5b700">Ficha</h3><button class="btn-red btn-sm" style="margin:0" onclick="document.getElementById('modalFicha').classList.add('hidden')">X</button></div><div id="mfBody" style="font-size:14px;line-height:1.65;margin-top:10px"></div></div></div>
 </body>
 </html>
