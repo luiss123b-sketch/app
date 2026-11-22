@@ -398,6 +398,34 @@ window._normFechaLocal = function(val){
   }
 }
 </style>
+
+<style id="urgente-rojo-v119">
+.badge-urgente-rojo {
+  background: rgba(231, 76, 60, 0.45) !important;
+  background-color: rgba(231, 76, 60, 0.45) !important;
+  color: #ffd6d6 !important;
+  border: 1px solid rgba(255, 92, 92, 0.95) !important;
+  padding: 2px 7px !important;
+  border-radius: 6px !important;
+  font-weight: 800 !important;
+}
+.badge-reparacion-marron {
+  background: rgba(180, 130, 86, 0.34) !important;
+  background-color: rgba(180, 130, 86, 0.34) !important;
+  color: #e6ccb2 !important;
+  border: 1px solid rgba(212, 163, 115, 0.82) !important;
+  padding: 2px 7px !important;
+  border-radius: 6px !important;
+  font-weight: 700 !important;
+}
+@media (max-width: 959px) {
+  #listaTickets .card:not(.movil-abierta) .badge-urgente-rojo,
+  #listaTickets .card:not(.movil-abierta) .badge-reparacion-marron {
+    font-size: 8.5px !important;
+    padding: 2px 6px !important;
+  }
+}
+</style>
 </head>
 <body>
 <header>
@@ -1251,19 +1279,9 @@ document.addEventListener("keydown", function(e){
       if(el.children.length > 0) return;
       const txt = (el.textContent || '').trim();
       if(txt === 'Reparación' || txt === 'Pendiente por Reparar'){
-        el.style.setProperty('background', 'rgba(180, 130, 86, 0.30)', 'important');
-        el.style.setProperty('color', '#e6ccb2', 'important');
-        el.style.setProperty('border', '1px solid rgba(212, 163, 115, 0.78)', 'important');
-        el.style.padding = '2px 7px';
-        el.style.borderRadius = '6px';
-        el.style.fontWeight = '700';
+        el.classList.add('badge-reparacion-marron');
       } else if(txt === 'Urgente' || txt === 'Revisión de Garantía' || txt === 'Garantía'){
-        el.style.setProperty('background', 'rgba(231, 76, 60, 0.42)', 'important');
-        el.style.setProperty('color', '#ffd6d6', 'important');
-        el.style.setProperty('border', '1px solid rgba(255, 92, 92, 0.92)', 'important');
-        el.style.padding = '2px 7px';
-        el.style.borderRadius = '6px';
-        el.style.fontWeight = '800';
+        el.classList.add('badge-urgente-rojo');
       } else if(txt === 'En espera de Pieza'){
         el.classList.add('badge-pieza-pulso');
       } else if(txt === 'En Revisión / Diagnóstico'){
