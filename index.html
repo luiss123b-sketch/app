@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1097,9 +1101,9 @@ document.addEventListener("keydown", function(e){
       if(el.children.length > 0) return;
       const txt = (el.textContent || '').trim();
       if(txt === 'Reparación' || txt === 'Pendiente por Reparar' || txt === 'Revisión de Garantía' || txt === 'Garantía'){
-        el.style.background = 'rgba(231, 76, 60, 0.36)';
-        el.style.color = '#ffd6d6';
-        el.style.border = '1px solid rgba(255, 107, 107, 0.85)';
+        el.style.setProperty('background', 'rgba(231, 76, 60, 0.38)', 'important');
+        el.style.setProperty('color', '#ffd6d6', 'important');
+        el.style.setProperty('border', '1px solid rgba(255, 107, 107, 0.88)', 'important');
         el.style.padding = '2px 7px';
         el.style.borderRadius = '6px';
         el.style.fontWeight = '700';
@@ -1130,15 +1134,25 @@ document.addEventListener("keydown", function(e){
 </script>
 
 <script>
-document.addEventListener('click', function(e){
-  if(window.innerWidth >= 960) return;
-  if(e.target.closest('button, a, input, select')) return;
-  const card = e.target.closest('#listaTickets .card');
-  if(!card) return;
-  const estabaAbierta = card.classList.contains('movil-abierta');
-  document.querySelectorAll('#listaTickets .card.movil-abierta').forEach(c => c.classList.remove('movil-abierta'));
-  if(!estabaAbierta){ card.classList.add('movil-abierta'); setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'nearest'}), 60); }
-});
+(function(){
+  let lastTouchT = 0;
+  function toggleCardMovil(e){
+    if(window.innerWidth >= 960) return;
+    if(e.target.closest('button, a, input, select')) return;
+    const card = e.target.closest('#listaTickets .card');
+    if(!card) return;
+    if(e.type === 'touchend') lastTouchT = Date.now();
+    else if(e.type === 'click' && Date.now() - lastTouchT < 400) return;
+    const estabaAbierta = card.classList.contains('movil-abierta');
+    document.querySelectorAll('#listaTickets .card.movil-abierta').forEach(c => c.classList.remove('movil-abierta'));
+    if(!estabaAbierta){
+      card.classList.add('movil-abierta');
+      setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'nearest'}), 80);
+    }
+  }
+  document.addEventListener('click', toggleCardMovil, true);
+  document.addEventListener('touchend', toggleCardMovil, {passive: true, capture: true});
+})();
 </script>
 </body>
 </html>
