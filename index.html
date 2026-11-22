@@ -67,7 +67,7 @@ body:not(.es-admin) .solo-admin { display: none !important; }
   #colDerechaPC { grid-column: 2; grid-row: 1; min-width: 0; }
   #barraAdminPC { display: flex !important; }
   #navTabs { display: none !important; }
-  #listaTickets { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; align-content: start; height: calc(100vh - 345px); max-height: calc(100vh - 345px); overflow-y: auto; padding: 6px; border: 1px solid #2c3545; border-radius: 10px; background: rgba(0,0,0,0.22); }
+  #listaTickets { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; align-content: start; height: calc(100vh - 345px); max-height: calc(100vh - 345px); overflow-y: auto; padding: 6px; border: 1px solid #2c3545; border-radius: 10px; background: rgba(0,0,0,0.22); }
   #listaTickets .card { margin-bottom: 0 !important; padding: 4px 6px !important; border-radius: 6px !important; font-size: 9.5px !important; line-height: 1.12 !important; }
   #listaTickets .card a, #listaTickets .card strong, #listaTickets .card b { font-size: 11px !important; }
   #listaTickets .card .btn-sm { padding: 1.5px 4px !important; font-size: 8.5px !important; margin-top: 1px !important; }
@@ -194,6 +194,17 @@ body:not(.es-admin) .card-entregada .btn-est-rapido { display: none !important; 
   #listaTickets .card:not(.movil-abierta) > div:nth-child(3) {
     display: none !important;
   }
+  
+  /* Total y método de pago en verde un pelín más pequeño en teléfono */
+  #listaTickets .card [style*="#2ecc71"],
+  #listaTickets .card [style*="rgb(46, 204, 113)"] {
+    font-size: 9.5px !important;
+  }
+  #listaTickets .card.movil-abierta [style*="#2ecc71"],
+  #listaTickets .card.movil-abierta [style*="rgb(46, 204, 113)"] {
+    font-size: 11px !important;
+  }
+
   /* Tarjeta abierta al tocarla: muestra TODO completo y todos los botones de abajo sin cortarse */
   #listaTickets .card.movil-abierta {
     grid-column: 1 / -1 !important;
@@ -247,6 +258,92 @@ body:not(.es-admin) .card-entregada .btn-est-rapido { display: none !important; 
     padding: 5px 12px !important;
     font-size: 11px !important;
     white-space: nowrap !important;
+  }
+}
+</style>
+
+<style id="movil-v100-final">
+@media (min-width: 960px) {
+  .movil-total-mini { display: none !important; }
+  #listaTickets {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 4px !important;
+  }
+  #listaTickets .card {
+    padding: 3px 6px !important;
+    font-size: 9px !important;
+    line-height: 1.08 !important;
+  }
+}
+@media (max-width: 959px) {
+  #listaTickets {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 5px !important;
+    width: 100% !important;
+  }
+  #listaTickets .card {
+    position: relative !important;
+    width: 100% !important;
+    padding: 6px 10px !important;
+    min-height: 48px !important;
+    max-height: 54px !important;
+    font-size: 10.5px !important;
+    line-height: 1.25 !important;
+    overflow: hidden !important;
+  }
+  #listaTickets .card:not(.movil-abierta) b,
+  #listaTickets .card:not(.movil-abierta) strong {
+    font-size: 12px !important;
+    font-weight: 800 !important;
+  }
+  #listaTickets .card:not(.movil-abierta) span,
+  #listaTickets .card:not(.movil-abierta) .badge-pieza-pulso {
+    font-size: 8.5px !important;
+    padding: 2px 6px !important;
+  }
+  #listaTickets .card:not(.movil-abierta) > div:nth-child(2) {
+    padding-right: 118px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    margin-top: 3px !important;
+  }
+  #listaTickets .card:not(.movil-abierta) > div:nth-child(n+3):not(.movil-total-mini) {
+    display: none !important;
+  }
+  /* Total en verde justo debajo de Reparación / ENTREGADO / En espera de Pieza */
+  #listaTickets .card:not(.movil-abierta) > div.movil-total-mini {
+    display: block !important;
+    position: absolute !important;
+    right: 10px !important;
+    bottom: 6px !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+    color: #2ecc71 !important;
+    white-space: nowrap !important;
+    z-index: 5 !important;
+  }
+  #listaTickets .card.movil-abierta > div.movil-total-mini {
+    display: none !important;
+  }
+  #listaTickets .card.movil-abierta {
+    max-height: none !important;
+    min-height: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding: 10px 11px !important;
+  }
+}
+</style>
+<style>
+.btn-ver-ficha-movil { display: none !important; }
+@media (max-width: 959px) {
+  #listaTickets .card.movil-abierta .btn-ver-ficha-movil {
+    display: inline-block !important;
+    background: #0ea5e9 !important;
+    color: #fff !important;
+    font-weight: 700 !important;
   }
 }
 </style>
@@ -1152,6 +1249,48 @@ document.addEventListener("keydown", function(e){
   }
   document.addEventListener('click', toggleCardMovil, true);
   document.addEventListener('touchend', toggleCardMovil, {passive: true, capture: true});
+})();
+</script>
+
+<script>
+(function(){
+  function syncTotalMini(){
+    document.querySelectorAll('#listaTickets .card').forEach(card => {
+      if(card.querySelector('.movil-total-mini')) return;
+      const m = (card.textContent || '').match(/RD\$\s*[0-9,]+(?:\.[0-9]{2})?/);
+      if(!m || !m) return;
+      const tag = document.createElement('div');
+      tag.className = 'movil-total-mini';
+      tag.textContent = 'Total: ' + m;
+      card.appendChild(tag);
+    });
+  }
+  const lt = document.getElementById('listaTickets');
+  if(lt) new MutationObserver(syncTotalMini).observe(lt, {childList: true, subtree: true});
+  setInterval(syncTotalMini, 800);
+})();
+</script>
+
+<script>
+(function(){
+  function addVerFichaBtn(){
+    document.querySelectorAll('#listaTickets .card').forEach(card => {
+      if(card.querySelector('.btn-ver-ficha-movil')) return;
+      const refBtn = card.querySelector('button[onclick*="imprimirTicket("], button[onclick*="abrirEditarFicha("], button[onclick*="ponerGarantia("], button[onclick*="eliminarTicket("]');
+      if(!refBtn) return;
+      const m = (refBtn.getAttribute('onclick') || '').match(/\((\d+)\)/);
+      if(!m || !m) return;
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'btn-sm btn-ver-ficha-movil';
+      b.textContent = '👁️ Ver Ficha';
+      b.setAttribute('onclick', 'verFicha(' + m + ')');
+      refBtn.parentNode.appendChild(b);
+    });
+  }
+  const lt = document.getElementById('listaTickets');
+  if(lt) new MutationObserver(addVerFichaBtn).observe(lt, {childList: true, subtree: true});
+  setInterval(addVerFichaBtn, 900);
 })();
 </script>
 </body>
