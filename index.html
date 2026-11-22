@@ -412,6 +412,7 @@ window._normFechaLocal = function(val){
   <label style="font-size:11px;color:#9aa3b2;">Estado / Motivo de Entrada</label>
   <select id="nEstado">
     <option value="Reparación">🔧 Reparación</option>
+    <option value="Urgente">🚨 Urgente</option>
     <option value="En Revisión / Diagnóstico">🔍 En Revisión / Diagnóstico</option>
     <option value="En espera de Pieza">⏳ En espera de Pieza</option>
     <option value="Listo">✅ Listo</option>
@@ -422,7 +423,7 @@ window._normFechaLocal = function(val){
   <div id="colDerechaPC"><div id="barraAdminPC" style="display:none;flex-wrap:wrap;gap:6px;margin-bottom:10px;align-items:center;"><button type="button" id="btnPcOrd" class="btn-yellow btn-sm" style="width:auto;padding:7px 13px;font-size:12.5px;font-weight:700;" onclick="document.getElementById('tabUsuariosAdmin')?.classList.add('hidden');document.getElementById('tabCuadre')?.classList.add('hidden');verTab('Ordenes',document.querySelectorAll('#navTabs .tab'))">📋 Órdenes</button><button type="button" class="btn-blue btn-sm solo-admin" style="width:auto;padding:7px 13px;font-size:12.5px;font-weight:700;" onclick="abrirSoloCuadres()">📊 Cuadres Diarios y Mensuales</button><button type="button" class="btn-blue btn-sm solo-admin" style="width:auto;padding:7px 13px;font-size:12.5px;font-weight:700;" onclick="abrirGestionUsuarios()">👥 Gestionar Admins / Usuarios</button><button type="button" class="btn-yellow btn-sm solo-admin" style="width:auto;padding:7px 13px;font-size:12.5px;font-weight:700;" onclick="cambiarClaveAdmin()">🔑 Mi Clave</button><button type="button" class="btn-red btn-sm solo-admin" style="width:auto;padding:7px 13px;font-size:12.5px;font-weight:700;" onclick="salirSinCuadrar()">🚪 Salir sin Cuadrar</button></div><div id="tabOrdenes">
     <div class="card" style="padding:10px">
       <div class="row"><select id="filtroSuc" onchange="cargarTickets()" style="flex:1"><option value="Medina">Medina</option><option value="Pinar Quemado">Pinar Quemado</option><option value="Todas">Todas</option></select><button class="btn-blue btn-sm" style="margin:0" onclick="cargarTickets()">Actualizar</button></div>
-      <input type="text" id="buscarTxt" placeholder="Buscar cliente, teléfono, equipo o #orden..." oninput="filtrarLocal()" onkeydown="if(event.key==='Enter'){event.preventDefault();buscarPorEnter();}" style="margin-top:8px"><div style="display:flex;gap:6px;margin-top:8px;align-items:center;"><button type="button" class="btn-green btn-sm" style="width:auto;padding:7px 12px;" onclick="filtrarFechaRapida('hoy')">Hoy</button><button type="button" class="btn-blue btn-sm" style="width:auto;padding:7px 12px;" onclick="filtrarFechaRapida('todas')">Todas</button><span style="display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;"><input type="date" id="filtroFecha" title="Desde fecha" onchange="filtrarLocal()" oninput="filtrarLocal()" style="width:110px;max-width:110px;height:28px !important;padding:2px 5px !important;font-size:11.5px !important;margin:0 !important;"><span style="font-size:10px;color:#9aa3b2;font-weight:700;">a</span><input type="date" id="filtroFechaHasta" title="Hasta fecha" onchange="filtrarLocal()" oninput="filtrarLocal()" style="width:110px;max-width:110px;height:28px !important;padding:2px 5px !important;font-size:11.5px !important;margin:0 !important;"></span><select id="filtroEstadoOrd" onchange="filtrarLocal()" style="width:auto;padding:6px 8px;font-size:12px;background:#121417;color:#f5b700;border:1px solid #2d333f;border-radius:7px;font-weight:700;"><option value="TODOS">Estado: Todos</option><option value="PENDIENTE">🔧 Pendiente por Reparar</option><option value="LISTO">✅ Listo</option><option value="ENTREGADO">📦 Entregado</option></select></div>
+      <input type="text" id="buscarTxt" placeholder="Buscar cliente, teléfono, equipo o #orden..." oninput="filtrarLocal()" onkeydown="if(event.key==='Enter'){event.preventDefault();buscarPorEnter();}" style="margin-top:8px"><div style="display:flex;gap:6px;margin-top:8px;align-items:center;"><button type="button" class="btn-green btn-sm" style="width:auto;padding:7px 12px;" onclick="filtrarFechaRapida('hoy')">Hoy</button><button type="button" class="btn-blue btn-sm" style="width:auto;padding:7px 12px;" onclick="filtrarFechaRapida('todas')">Todas</button><span style="display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;"><input type="date" id="filtroFecha" title="Desde fecha" onchange="filtrarLocal()" oninput="filtrarLocal()" style="width:110px;max-width:110px;height:28px !important;padding:2px 5px !important;font-size:11.5px !important;margin:0 !important;"><span style="font-size:10px;color:#9aa3b2;font-weight:700;">a</span><input type="date" id="filtroFechaHasta" title="Hasta fecha" onchange="filtrarLocal()" oninput="filtrarLocal()" style="width:110px;max-width:110px;height:28px !important;padding:2px 5px !important;font-size:11.5px !important;margin:0 !important;"></span><select id="filtroEstadoOrd" onchange="filtrarLocal()" style="width:auto;padding:6px 8px;font-size:12px;background:#121417;color:#f5b700;border:1px solid #2d333f;border-radius:7px;font-weight:700;"><option value="TODOS">Estado: Todos</option><option value="PENDIENTE">🔧 Pendiente por Reparar</option><option value="LISTO">✅ Listo</option><option value="ENTREGADO">📦 Entregado</option><option value="Urgente">🚨 Urgente</option></select></div>
     </div>
     <div id="listaTickets"></div>
 <div style="position:sticky;bottom:6px;z-index:20;margin-top:8px;display:flex;justify-content:center;align-items:center;background:#161a23;padding:7px 14px;border-radius:10px;border:1px solid #2c3545;box-shadow:0 -4px 12px rgba(0,0,0,0.45);">
@@ -1061,7 +1062,8 @@ function abrirMenuEstadoRapido(numVis){
   }
   const estados = [
     
-    {nom:"Reparación", color:"#ec7063", ico:"🔧"},
+    {nom:"Reparación", color:"#b07d56", ico:"🔧"},
+      {nom:"Urgente", color:"#e74c3c", ico:"🚨"},
       {nom:"En Revisión / Diagnóstico", color:"#8e44ad", ico:"🔍"},
       {nom:"En espera de Pieza", color:"#f5b041", ico:"⏳"},
       {nom:"Listo", color:"#5dade2", ico:"✅"},
@@ -1248,13 +1250,20 @@ document.addEventListener("keydown", function(e){
     document.querySelectorAll('#listaTickets .card span, #listaTickets .card div').forEach(el => {
       if(el.children.length > 0) return;
       const txt = (el.textContent || '').trim();
-      if(txt === 'Reparación' || txt === 'Pendiente por Reparar' || txt === 'Revisión de Garantía' || txt === 'Garantía'){
-        el.style.setProperty('background', 'rgba(231, 76, 60, 0.38)', 'important');
-        el.style.setProperty('color', '#ffd6d6', 'important');
-        el.style.setProperty('border', '1px solid rgba(255, 107, 107, 0.88)', 'important');
+      if(txt === 'Reparación' || txt === 'Pendiente por Reparar'){
+        el.style.setProperty('background', 'rgba(180, 130, 86, 0.30)', 'important');
+        el.style.setProperty('color', '#e6ccb2', 'important');
+        el.style.setProperty('border', '1px solid rgba(212, 163, 115, 0.78)', 'important');
         el.style.padding = '2px 7px';
         el.style.borderRadius = '6px';
         el.style.fontWeight = '700';
+      } else if(txt === 'Urgente' || txt === 'Revisión de Garantía' || txt === 'Garantía'){
+        el.style.setProperty('background', 'rgba(231, 76, 60, 0.42)', 'important');
+        el.style.setProperty('color', '#ffd6d6', 'important');
+        el.style.setProperty('border', '1px solid rgba(255, 92, 92, 0.92)', 'important');
+        el.style.padding = '2px 7px';
+        el.style.borderRadius = '6px';
+        el.style.fontWeight = '800';
       } else if(txt === 'En espera de Pieza'){
         el.classList.add('badge-pieza-pulso');
       } else if(txt === 'En Revisión / Diagnóstico'){
