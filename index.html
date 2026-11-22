@@ -716,12 +716,16 @@ function abrirMenuEstadoRapido(numVis){
     {nom:"Sin Reparación", color:"#9aa3b2", ico:"❌"}
   ];
   m.style.display = "flex";
+  m.onclick = function(ev){ if(ev.target === m) m.style.display = "none"; };
   m.innerHTML = `<div class="card" style="max-width:340px;width:100%;border:1px solid #f5b700;padding:14px;">
-    <h3 style="margin:0 0 6px;color:#f5b700;font-size:15px;">🔄 Cambiar Estado • Orden #${numVis}</h3>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+      <h3 style="margin:0;color:#f5b700;font-size:15px;">🔄 Cambiar Estado • Orden #${numVis}</h3>
+      <button type="button" style="background:#e74c3c;color:#fff;border:none;border-radius:6px;padding:4px 9px;font-weight:700;cursor:pointer;" onclick="document.getElementById('modalEstadoRapido').style.display='none'">✕</button>
+    </div>
     <div style="font-size:12px;color:#9aa3b2;margin-bottom:10px;">${t.dispositivo||""} (${t.clientes?.nombre||"Cliente"})</div>
     <div style="display:flex;flex-direction:column;gap:6px;">
       ${estados.map(e=>`<button type="button" style="background:${e.color};color:#121417;font-weight:700;border:none;padding:9px;border-radius:7px;cursor:pointer;text-align:left;" onclick="guardarEstadoRapido(${t.numero_orden},'${e.nom}')">${e.ico} ${e.nom}</button>`).join("")}
-      <button type="button" class="btn-red btn-sm" style="margin-top:4px;padding:7px;" onclick="document.getElementById('modalEstadoRapido').style.display='none'">Cancelar</button>
+      <button type="button" style="background:#2d333f;color:#fff;font-weight:700;border:1px solid #4a5262;margin-top:4px;padding:9px;border-radius:7px;cursor:pointer;" onclick="document.getElementById('modalEstadoRapido').style.display='none'">Cancelar / Salir</button>
     </div>
   </div>`;
 }
