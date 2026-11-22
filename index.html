@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="L Reparacion Cell">
+<title>L Reparacion Cell</title>
+<style>
+  :root { --bg:#121417; --card:#1e2229; --accent:#f5b700; --green:#2ecc71; --yellow:#f5b700; --red:#e84118; --text:#f5f6fa; --muted:#a4b0be; }
+  * { box-sizing:border-box; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+  body { margin:0; background:var(--bg); color:var(--text); padding-bottom:80px; }
+  header { background:linear-gradient(90deg,#f5b700,#ffce3a); border-bottom:3px solid #2b6cb0; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:20; }
+  header h1 { margin:0; font-size:17px; color:#121417; font-weight:800; }
+  .badge { background:#121417; color:#2ecc71; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:700; }
+  .container { padding:14px; max-width:650px; margin:0 auto; }
+  .card { background:var(--card); border-radius:12px; padding:14px; margin-bottom:12px; }
+  label { display:block; font-size:12px; color:var(--muted); margin:8px 0 4px; font-weight:600; }
+  input, select { width:100%; padding:11px; border-radius:8px; border:1px solid #485460; background:#121417; color:var(--text); font-size:15px; }
+  button { width:100%; padding:12px; border:none; border-radius:8px; font-size:15px; font-weight:700; cursor:pointer; margin-top:10px; }
+  .btn-green { background:var(--green); color:#121417; }
+  .btn-blue { background:#2b6cb0; color:#fff; }
+  .btn-yellow { background:var(--yellow); color:#121417; }
+  .btn-red { background:var(--red); color:#fff; }
+  .btn-sm { padding:7px 10px; font-size:12px; margin-top:6px; width:auto; display:inline-block; margin-right:6px; }
+  .tabs { position:fixed; bottom:0; left:0; right:0; background:#192026; display:flex; border-top:1px solid #353b48; z-index:30; }
+  .tab { flex:1; text-align:center; padding:10px 4px; color:var(--muted); font-size:12px; font-weight:700; cursor:pointer; }
+  .tab.active { color:var(--accent); border-top:3px solid var(--accent); }
+  .ticket { border-left:4px solid var(--yellow); }
+  .ticket.entregado { border-left-color:var(--green); opacity:.88; }
+  .ticket.listo { border-left-color:#3498db; }
+  .row { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .pill { padding:3px 8px; border-radius:6px; font-size:11px; font-weight:800; background:#121417; }
+  .hidden { display:none !important; }
+  .kpi { text-align:center; padding:16px; background:#1e2229; border:1px solid #2ecc71; border-radius:12px; margin-bottom:12px; }
+  .kpi small { color:var(--muted); display:block; font-size:12px; }
+  .kpi strong { color:var(--green); font-size:26px; }
+</style>
+</head>
+<body>
+<header>
+  <div><h1>L REPARACION CELL</h1><div style="font-size:10px;color:#121417;font-weight:700">Tel: 809-975-7231 • Jarabacoa</div></div>
+  <div style="display:flex;align-items:center;gap:6px"><span id="hdrUser" class="badge">Sin sesión</span><button id="btnSalirTop" onclick="cerrarSesion()" class="hidden" style="width:auto;margin:0;padding:4px 10px;font-size:12px;background:#e84118;color:#fff;border-radius:20px">Salir</button></div>
+</header>
+<div id="loginView" class="container"><div class="card"><h2 style="margin-top:0;color:var(--accent)">Iniciar Sesión</h2><label>Usuario</label><select id="loginUser"></select><label>Contraseña / PIN</label><input type="password" id="loginPass" placeholder="Ingresa tu clave"><label>Sucursal</label><select id="loginSuc"><option value="Medina">Medina</option><option value="Pinar Quemado">Pinar Quemado</option></select><button class="btn-green" onclick="doLogin()">Entrar al Sistema</button></div></div>
+
+<div id="appView" class="container hidden">
+  <div id="tabOrdenes">
+    <div class="card" style="padding:10px">
+      <div class="row"><select id="filtroSuc" onchange="cargarTickets()" style="flex:1"><option value="Medina">Medina</option><option value="Pinar Quemado">Pinar Quemado</option><option value="Todas">Todas</option></select><button class="btn-blue btn-sm" style="margin:0" onclick="cargarTickets()">Actualizar</button></div>
+      <input type="text" id="buscarTxt" placeholder="Buscar cliente, teléfono, equipo o #orden..." oninput="filtrarLocal()" style="margin-top:8px">
+    </div>
+    <div id="listaTickets"></div>
+  </div>
+
+  <div id="tabNueva" class="hidden"><div class="card"><h3 style="margin-top:0;color:var(--green)">Nueva Entrada / Venta</h3><label>Tipo</label><select id="nTipo"><option value="Reparación (Taller)">Reparación (Taller)</option><option value="Venta / Accesorio">Venta / Accesorio</option></select><label>Teléfono</label><div class="row"><input type="tel" id="nTel" placeholder="809-000-0000" style="flex:1"><button class="btn-blue btn-sm" style="margin:0" onclick="buscarCliente()">Buscar</button></div><label>Nombre</label><input type="text" id="nNom" placeholder="Nombre completo"><label>Dispositivo / Artículo</label><input type="text" id="nDisp" placeholder="Ej: iPhone 13 Pro"><label>Falla</label><input type="text" id="nFalla" placeholder="Ej: Pantalla rota"><label>Detalles / Abono</label><input type="text" id="nDesc" placeholder="Ej: ABONO: RD$ 500"><label>Método de Pago</label><select id="nPago"><option value="Efectivo">Efectivo</option><option value="Transferencia">Transferencia</option><option value="Pendiente">Pendiente</option></select><label>Total (RD$)</label><input type="number" id="nTot" value="0" step="0.01"><button class="btn-green" onclick="crearTicket()">Guardar Orden</button></div></div>
+
+  <div id="tabCuadre" class="hidden">
+    <div class="kpi"><small id="lblCajaSuc">EN CAJA SIN CERRAR</small><strong id="lblCajaMonto">RD$ 0.00</strong></div>
+    <div id="admCuadreBox" class="hidden">
+      <div class="card" style="border:1px solid #f5b700"><h3 style="margin-top:0;color:#f5b700">Facturación por Tienda</h3>
+      <select id="factSuc" onchange="cargarPanelAdmin()" style="padding:7px;font-size:12px;margin-bottom:6px"><option value="Todas">Todas las tiendas (Medina + Pinar Quemado)</option><option value="Medina">Solo Medina</option><option value="Pinar Quemado">Solo Pinar Quemado</option></select>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px">
+        <button class="btn-blue btn-sm" style="margin:0;padding:5px 8px;font-size:11px" onclick="setRangoFact('hoy')">Hoy</button>
+        <button class="btn-blue btn-sm" style="margin:0;padding:5px 8px;font-size:11px" onclick="setRangoFact('mes')">Este Mes</button>
+        <button class="btn-blue btn-sm" style="margin:0;padding:5px 8px;font-size:11px" onclick="setRangoFact('3m')">Últ. 3 Meses</button>
+        <button class="btn-blue btn-sm" style="margin:0;padding:5px 8px;font-size:11px" onclick="setRangoFact('anio')">Este Año</button>
+        <button class="btn-yellow btn-sm" style="margin:0;padding:5px 8px;font-size:11px" onclick="setRangoFact('todo')">Todo</button>
+      </div>
+      <div class="row" style="margin-bottom:8px"><div style="flex:1"><small style="color:var(--muted);font-size:11px">Desde:</small><input type="date" id="factDesde" onchange="cargarPanelAdmin()" style="padding:6px;font-size:12px"></div><div style="flex:1"><small style="color:var(--muted);font-size:11px">Hasta:</small><input type="date" id="factHasta" onchange="cargarPanelAdmin()" style="padding:6px;font-size:12px"></div></div>
+      <div id="resumenTiendas" style="font-size:13px;line-height:1.6"></div></div>
+      <div class="card"><h3 style="margin-top:0;color:#f5b700">Usuarios del Sistema</h3><div id="listaUsuariosAdm" style="font-size:13px;margin-bottom:8px"></div><div class="row"><input id="nuNom" placeholder="Nombre" style="padding:8px;font-size:13px"><input id="nuClv" placeholder="Clave" style="padding:8px;font-size:13px"><select id="nuRol" style="padding:8px;font-size:13px"><option value="Empleado">Empleado</option><option value="Admin">Admin</option></select></div><button class="btn-yellow btn-sm" onclick="crearUsuarioAdm()">+ Agregar Usuario</button></div>
+      <button class="btn-green" style="margin-bottom:12px" onclick="hacerCuadre()">Hacer Cuadre / Cerrar Caja</button>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0;color:#f5b700">Buscar Cierres por Sucursal y Fechas</h3>
+      <select id="filtroSucCierre" onchange="cargarCuadre()" style="padding:8px;font-size:13px;margin-bottom:6px"><option value="Todas">Todas las sucursales (Medina + Pinar Quemado)</option><option value="Medina">Medina</option><option value="Pinar Quemado">Pinar Quemado</option></select>
+      <div class="row" style="margin-bottom:6px"><div style="flex:1"><small style="color:var(--muted);font-size:11px">Desde:</small><input type="date" id="fDesde" onchange="cargarCuadre()" style="padding:7px;font-size:12px"></div><div style="flex:1"><small style="color:var(--muted);font-size:11px">Hasta:</small><input type="date" id="fHasta" onchange="cargarCuadre()" style="padding:7px;font-size:12px"></div></div>
+      <button class="btn-blue btn-sm" style="margin:0 0 8px 0" onclick="document.getElementById('filtroSucCierre').value='Todas';document.getElementById('fDesde').value='';document.getElementById('fHasta').value='';cargarCuadre()">Ver Todo el Tiempo</button>
+      <div id="resumenFiltroCierres" style="font-size:12px;color:#f5b700;margin-bottom:6px;font-weight:700"></div>
+      <div id="listaCuadres"></div>
+    </div>
+    <button class="btn-red" onclick="cerrarSesion()">Cerrar Sesión</button>
+  </div>
+</div>
+
+<div id="navTabs" class="tabs hidden"><div class="tab active" onclick="verTab('Ordenes',this)">Órdenes</div><div class="tab" onclick="verTab('Nueva',this)">+ Nueva</div><div class="tab" onclick="verTab('Cuadre',this)">Admin / Caja</div></div>
+<script>
+const U='https://neggjzosecrdveuqrgnc.supabase.co/rest/v1/';
+const K='sb_publishable_ggC9MgaiT7KbHc0CgfuO9w_uYL9WVn5';
+const H={'apikey':K,'Authorization':'Bearer '+K,'Content-Type':'application/json','Prefer':'return=representation'};
+async function api(q,m='GET',b=null){const r=await fetch(U+q,{method:m,headers:H,body:b?JSON.stringify(b):null});return r.json();}
+let usuariosDB=[],ticketsCache=[],usuarioActual=null,clienteIdSel=null;
+const uName=u=>u.usuario||u.nombre||u.username||('User '+u.id);
+const uPass=u=>String(u.password??u.pin??u.clave??'');
+const isAdm=()=>usuarioActual&&(usuarioActual.rol==='Admin'||uName(usuarioActual)==='Luis');
+
+async function init(){
+  try{
+    const [ad,us]=await Promise.all([api('admins?select=*'),api('usuarios_sistema?select=*')]);
+    const adm=(Array.isArray(ad)&&ad.length)?ad.map(x=>({...x,rol:'Admin'})):[{nombre:'Luis',clave:'0212',rol:'Admin'}];
+    if(!adm.some(x=>uName(x)==='Luis'))adm.unshift({nombre:'Luis',clave:'0212',rol:'Admin'});
+    usuariosDB=[...adm,...(Array.isArray(us)?us:[])];
+  }catch(e){usuariosDB=[{nombre:'Luis',clave:'0212',rol:'Admin'}];}
+  document.getElementById('loginUser').innerHTML=usuariosDB.map(u=>`<option value="${uName(u)}">${uName(u)} (${u.rol||u.cargo||'Empleado'})</option>`).join('');
+  const saved=sessionStorage.getItem('rc_session');
+  if(saved){const s=JSON.parse(saved);usuarioActual=s.user;entrarApp(s.suc);}
+}
+function doLogin(){
+  const un=document.getElementById('loginUser').value,pw=document.getElementById('loginPass').value.trim(),suc=document.getElementById('loginSuc').value;
+  const u=usuariosDB.find(x=>uName(x)===un);
+  if(!u||(uPass(u).trim()!==pw&&!(u.rol==='Admin'&&pw==='0212'))){alert('Contraseña incorrecta');return;}
+  usuarioActual=u;sessionStorage.setItem('rc_session',JSON.stringify({user:u,suc}));entrarApp(suc);
+}
+function entrarApp(suc){
+  document.getElementById('loginView').classList.add('hidden');
+  document.getElementById('appView').classList.remove('hidden');
+  document.getElementById('navTabs').classList.remove('hidden');
+  document.getElementById('btnSalirTop').classList.remove('hidden');
+  document.getElementById('filtroSuc').value=suc;
+  document.getElementById('hdrUser').textContent=`${uName(usuarioActual)} • ${suc}`;
+  let tm;const rst=()=>{clearTimeout(tm);tm=setTimeout(cerrarSesion,300000);};
+  ['click','touchstart','keydown'].forEach(e=>document.addEventListener(e,rst));rst();
+  cargarTickets();
+}
+function cerrarSesion(){sessionStorage.removeItem('rc_session');location.reload();}
+function verTab(name,el){
+  ['Ordenes','Nueva','Cuadre'].forEach(x=>document.getElementById('tab'+x).classList.add('hidden'));
+  document.getElementById('tab'+name).classList.remove('hidden');
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
+  if(name==='Cuadre'){cargarCuadre();cargarPanelAdmin();}
+}
+async function cargarTickets(){
+  const suc=document.getElementById('filtroSuc').value;
+  let q='tickets?select=*,clientes(nombre,telefono)&order=numero_orden.desc&limit=100';
+  if(suc!=='Todas')q+='&sucursal=eq.'+encodeURIComponent(suc);
+  const data=await api(q);ticketsCache=Array.isArray(data)?data:[];filtrarLocal();
+}
+function filtrarLocal(){
+  const q=document.getElementById('buscarTxt').value.toLowerCase().trim();
+  const list=ticketsCache.filter(t=>{
+    const nom=(t.clientes?.nombre||'').toLowerCase(),tel=(t.clientes?.telefono||'').toLowerCase(),disp=(t.dispositivo||'').toLowerCase(),ord=String(t.orden_sucursal||t.numero_orden||'');
+    return !q||nom.includes(q)||tel.includes(q)||disp.includes(q)||ord.includes(q);
+  });
+  const cont=document.getElementById('listaTickets');
+  if(!list.length){cont.innerHTML='<div class="card">No hay órdenes.</div>';return;}
+  cont.innerHTML=list.map(t=>{
+    const est=t.estado||'En espera',cls=est==='ENTREGADO'?'entregado':(est==='Listo'?'listo':''),nom=t.clientes?.nombre||'Cliente General',tel=t.clientes?.telefono||'',num=t.orden_sucursal||t.numero_orden;
+    const msg=encodeURIComponent(`Hola ${nom}, su orden #${num} (${t.dispositivo}) en L Reparacion Cell (${t.sucursal}) está: *${est}*. Total: RD$ ${Number(t.total||0).toFixed(2)}`);
+    return `<div class="card ticket ${cls}"><div class="row"><strong>#${num} • ${nom}</strong><span class="pill">${est}</span></div><div style="font-size:13px;color:var(--muted);margin:4px 0">${t.dispositivo||''} — ${t.fallo||''}</div><div style="font-size:12px;color:var(--muted)">${t.descripcion||''}</div><div class="row" style="margin-top:8px"><strong style="color:var(--green)">RD$ ${Number(t.total||0).toFixed(2)} (${t.metodo_pago||'Efectivo'})</strong><small style="color:var(--muted)">${t.sucursal}</small></div><div style="margin-top:6px">${est!=='ENTREGADO'?`<button class="btn-green btn-sm" onclick="marcarEntregado(${t.numero_orden})">Entregar / Cobrar</button>`:''}${est==='En espera'?`<button class="btn-blue btn-sm" onclick="marcarListo(${t.numero_orden})">Marcar Listo</button>`:''}${tel?`<a href="https://wa.me{tel.replace(/\D/g,'')}?text=${msg}" target="_blank"><button class="btn-yellow btn-sm">WhatsApp</button></a>`:''}${isAdm()?`<button class="btn-blue btn-sm" style="background:#8c7ae6" onclick="editarTicket(${t.numero_orden})">Editar / Abono</button><button class="btn-red btn-sm" onclick="eliminarTicket(${t.numero_orden})">Eliminar</button>`:''}</div></div>`;
+  }).join('');
+}
+async function marcarListo(id){await api('tickets?numero_orden=eq.'+id,'PATCH',{estado:'Listo'});cargarTickets();}
+async function marcarEntregado(id){const mp=prompt('Método de pago (Efectivo / Transferencia):','Efectivo');if(!mp)return;await api('tickets?numero_orden=eq.'+id,'PATCH',{estado:'ENTREGADO',metodo_pago:mp,fecha_salida:new Date().toISOString()});cargarTickets();}
+async function editarTicket(id){const t=ticketsCache.find(x=>x.numero_orden===id);if(!t)return;const nTot=prompt('Nuevo Total (RD$):',t.total||0);if(nTot===null)return;const abono=prompt('Agregar Abono (RD$) o dejar en 0:','0');if(abono===null)return;const nDesc=prompt('Detalles / Notas:',t.descripcion||'')??'';const ab=parseFloat(abono||'0');const descFinal=ab>0?(nDesc+(nDesc?' | ':'')+'ABONO: RD$ '+ab.toFixed(2)):nDesc;await api('tickets?numero_orden=eq.'+id,'PATCH',{total:parseFloat(nTot||'0'),descripcion:descFinal});cargarTickets();}
+async function eliminarTicket(id){if(!confirm('¿Seguro que deseas ELIMINAR esta orden?'))return;await api('tickets?numero_orden=eq.'+id,'DELETE');cargarTickets();}
+async function buscarCliente(){const tel=document.getElementById('nTel').value.trim();if(!tel)return;const data=await api('clientes?telefono=eq.'+encodeURIComponent(tel)+'&limit=1');if(data&&data.length){clienteIdSel=data.id;document.getElementById('nNom').value=data.nombre||'';}else{clienteIdSel=null;alert('Cliente nuevo: escribe su nombre.');}}
+async function crearTicket(){
+  const suc=document.getElementById('filtroSuc').value==='Todas'?'Medina':document.getElementById('filtroSuc').value;
+  const tel=document.getElementById('nTel').value.trim(),nom=document.getElementById('nNom').value.trim()||'Cliente General',disp=document.getElementById('nDisp').value.trim(),fallo=document.getElementById('nFalla').value.trim(),desc=document.getElementById('nDesc').value.trim(),mpago=document.getElementById('nPago').value,tot=parseFloat(document.getElementById('nTot').value||'0'),tipo=document.getElementById('nTipo').value;
+  if(!disp){alert('Escribe el dispositivo o artículo');return;}
+  let cid=clienteIdSel;if(!cid){const nc=await api('clientes','POST',{nombre:nom,telefono:tel});if(nc&&nc.length)cid=nc.id;}
+  const ult=await api('tickets?select=orden_sucursal&sucursal=eq.'+encodeURIComponent(suc)+'&order=orden_sucursal.desc&limit=1');
+  const sigOrd=(ult&&ult.length?Number(ult.orden_sucursal||0):0)+1;
+  const now=new Date(),fec=now.toLocaleDateString('es-DO')+' '+now.toLocaleTimeString('es-DO',{hour:'2-digit',minute:'2-digit'}),estado=tipo.includes('Venta')?'ENTREGADO':'En espera';
+  await api('tickets','POST',{sucursal:suc,orden_sucursal:sigOrd,cliente_id:cid,dispositivo:disp,fallo:fallo,descripcion:desc,vendedor:uName(usuarioActual),estado:estado,metodo_pago:mpago,total:tot,fecha:fec});
+  alert(`Orden #${sigOrd} guardada en ${suc}`);
+  ['nTel','nNom','nDisp','nFalla','nDesc'].forEach(x=>document.getElementById(x).value='');document.getElementById('nTot').value='0';clienteIdSel=null;
+  verTab('Ordenes',document.querySelector('.tab'));cargarTickets();
+}
+async function cargarCuadre(){
+  const sucCaja=document.getElementById("filtroSuc").value;
+  const data=await api("tickets?select=total,estado,descripcion,sucursal,metodo_pago&cuadre_id=is.null");
+  const arr=Array.isArray(data)?data:[];
+  const calcCaja=s=>{let ef=0,tr=0;arr.filter(x=>s==="Todas"||x.sucursal===s).forEach(x=>{let m=0;if(x.estado==="ENTREGADO")m=Number(x.total||0);else if(String(x.descripcion||"").includes("ABONO")){const r=String(x.descripcion).match(/ABONO[^0-9]*([0-9.]+)/i);if(r)m=Number(r.pop()||0);}if(String(x.metodo_pago||"").toLowerCase().includes("transf"))tr+=m;else ef+=m;});return {ef,tr,tot:ef+tr};};
+  const fmt=n=>"RD$ "+n.toLocaleString("en-US",{minimumFractionDigits:2});
+  if(isAdm()){
+    document.getElementById("admCuadreBox")?.classList.remove("hidden");
+    const m=calcCaja("Medina"),pq=calcCaja("Pinar Quemado"),g=calcCaja("Todas");
+    document.getElementById("lblCajaSuc").textContent="EN CAJA SIN CERRAR (AMBAS TIENDAS)";
+    document.getElementById("lblCajaMonto").innerHTML=`<div style="font-size:15px;color:#f5b700;margin-top:4px">Medina: <span style="color:#2ecc71">${fmt(m.tot)}</span> <small style="display:inline;font-size:11px">(Ef: ${fmt(m.ef)} | Tr: ${fmt(m.tr)})</small></div><div style="font-size:15px;color:#f5b700;margin-top:2px">Pinar Quemado: <span style="color:#2ecc71">${fmt(pq.tot)}</span> <small style="display:inline;font-size:11px">(Ef: ${fmt(pq.ef)} | Tr: ${fmt(pq.tr)})</small></div><div style="font-size:20px;color:#2ecc71;margin-top:6px;border-top:1px solid #353b48;padding-top:4px">TOTAL CAJA: ${fmt(g.tot)}</div>`;
+  }else{
+    const c=calcCaja(sucCaja);
+    document.getElementById("lblCajaSuc").textContent=`EN CAJA SIN CERRAR (${sucCaja})`;
+    document.getElementById("lblCajaMonto").textContent=fmt(c.tot);
+  }
+  const sucF=document.getElementById("filtroSucCierre")?.value||"Todas";
+  const d1=document.getElementById("fDesde")?.value||"",d2=document.getElementById("fHasta")?.value||"";
+  let q2="cuadres?select=*&order=id.desc&limit=500";
+  if(sucF!=="Todas")q2+="&sucursal=eq."+encodeURIComponent(sucF);
+  const cData=await api(q2);
+  const normF=s=>{const st=String(s||"").slice(0,10);if(st.includes("/")){const p=st.split("/");return p.reverse().join("-");}return st;};
+  const filtrados=(Array.isArray(cData)?cData:[]).filter(c=>{const fc=normF(c.fecha);if(d1&&fc<d1)return false;if(d2&&fc>d2)return false;return true;});
+  const totF=filtrados.reduce((a,c)=>a+Number(c.total_ingresos||0)+Number(c.total_transferencia||0),0);
+  document.getElementById("resumenFiltroCierres").textContent=`Mostrando ${filtrados.length} cierres • Total filtrado: ${fmt(totF)}`;
+  document.getElementById("listaCuadres").innerHTML=filtrados.map(c=>`<div style="border-bottom:1px solid #485460;padding:8px 0;font-size:13px"><strong>#${c.id} • ${c.sucursal||""}</strong> (${String(c.fecha||"").slice(0,16)})<br>Cerrado por: ${c.cerrado_por||"-"} • <span style="color:var(--green)">${fmt(Number(c.total_ingresos||0)+Number(c.total_transferencia||0))}</span>${isAdm()?` <button class="btn-red btn-sm" style="padding:3px 8px;font-size:11px" onclick="eliminarCuadre(${c.id})">Eliminar</button>`:""}</div>`).join("")||"Sin cierres en ese rango.";
+}
+async function hacerCuadre(){
+  const suc=document.getElementById("filtroSuc").value;if(suc==="Todas"){alert("Selecciona Medina o Pinar Quemado arriba para cuadrar.");return;}
+  if(!confirm("¿Cerrar caja ahora para "+suc+"?"))return;
+  const data=await api("tickets?select=*&cuadre_id=is.null&sucursal=eq."+encodeURIComponent(suc));let ef=0,tr=0;
+  (Array.isArray(data)?data:[]).forEach(x=>{let m=0;if(x.estado==="ENTREGADO")m=Number(x.total||0);else if(String(x.descripcion||"").includes("ABONO")){const r=String(x.descripcion).match(/ABONO[^0-9]*([0-9.]+)/i);if(r)m=Number(r.pop()||0);}if(String(x.metodo_pago||"").toLowerCase().includes("transf"))tr+=m;else ef+=m;});
+  const now=new Date(),fec=now.toLocaleDateString("es-DO")+" "+now.toLocaleTimeString("es-DO",{hour:"2-digit",minute:"2-digit"});
+  const res=await api("cuadres","POST",{sucursal:suc,fecha:fec,cerrado_por:uName(usuarioActual),total_ingresos:ef,total_transferencia:tr});
+  const nid=Array.isArray(res)?res.at(0)?.id:res?.id;
+  if(nid)await api("tickets?cuadre_id=is.null&sucursal=eq."+encodeURIComponent(suc),"PATCH",{cuadre_id:nid});
+  alert("Cuadre realizado: Efectivo RD$ "+ef.toFixed(2)+" | Transf RD$ "+tr.toFixed(2));cargarCuadre();cargarPanelAdmin();
+}
+async function eliminarCuadre(id){if(!confirm("¿Eliminar cierre #"+id+"?"))return;await api("tickets?cuadre_id=eq."+id,"PATCH",{cuadre_id:null});await api("cuadres?id=eq."+id,"DELETE");cargarCuadre();cargarPanelAdmin();}
+function setRangoFact(modo){
+  const hoy=new Date(),iso=d=>d.toISOString().slice(0,10);
+  let d1="",d2=iso(hoy);
+  if(modo==="hoy"){d1=d2;}
+  else if(modo==="mes"){d1=iso(new Date(hoy.getFullYear(),hoy.getMonth(),1));}
+  else if(modo==="3m"){d1=iso(new Date(hoy.getFullYear(),hoy.getMonth()-3,hoy.getDate()));}
+  else if(modo==="anio"){d1=iso(new Date(hoy.getFullYear(),0,1));}
+  else{d1="";d2="";}
+  document.getElementById("factDesde").value=d1;
+  document.getElementById("factHasta").value=d2;
+  cargarPanelAdmin();
+}
+async function cargarPanelAdmin(){
+  if(!isAdm())return;
+  const [cuadresAll,allT]=await Promise.all([api("cuadres?select=*"),api("tickets?select=*")]);
+  const cArr=Array.isArray(cuadresAll)?cuadresAll:[],tArr=Array.isArray(allT)?allT:[];
+  const fSuc=document.getElementById("factSuc")?.value||"Todas";
+  const fd1=document.getElementById("factDesde")?.value||"";
+  const fd2=document.getElementById("factHasta")?.value||"";
+  const normF=s=>{const st=String(s||"").slice(0,10);if(st.includes("/")){const p=st.split("/");return p.reverse().join("-");}return st;};
+  const enRango=f=>{const fn=normF(f);if(fd1&&fn<fd1)return false;if(fd2&&fn>fd2)return false;return true;};
+  const calc=s=>{
+    let ef=0,tr=0,pend=0;
+    cArr.filter(c=>(s==="Todas"||c.sucursal===s)&&enRango(c.fecha)).forEach(c=>{ef+=Number(c.total_ingresos||0);tr+=Number(c.total_transferencia||0);});
+    tArr.filter(t=>(s==="Todas"||t.sucursal===s)&&!t.cuadre_id&&enRango(t.fecha)).forEach(t=>{let m=0;if(t.estado==="ENTREGADO")m=Number(t.total||0);else if(String(t.descripcion||"").includes("ABONO")){const r=String(t.descripcion).match(/ABONO[^0-9]*([0-9.]+)/i);if(r)m=Number(r.pop()||0);}if(String(t.metodo_pago||"").toLowerCase().includes("transf"))tr+=m;else ef+=m;});
+    tArr.filter(t=>(s==="Todas"||t.sucursal===s)&&t.estado!=="ENTREGADO"&&enRango(t.fecha)).forEach(t=>{let ab=0;const r=String(t.descripcion||"").match(/ABONO[^0-9]*([0-9.]+)/i);if(r)ab=Number(r.pop()||0);pend+=Math.max(0,Number(t.total||0)-ab);});
+    return {ef,tr,tot:ef+tr,pend};
+  };
+  const m=calc("Medina"),pq=calc("Pinar Quemado"),g=calc(fSuc),fmt=n=>"RD$ "+n.toLocaleString("en-US",{minimumFractionDigits:2});
+  const eti=fd1||fd2?`(${fd1||"Inicio"} → ${fd2||"Hoy"})`:"(Todo el Tiempo)";
+  let det="";
+  if(fSuc==="Todas")det=`<div><strong>Medina:</strong> <span style="color:var(--green)">${fmt(m.tot)}</span> (Ef: ${fmt(m.ef)} | Tr: ${fmt(m.tr)})</div><div><strong>Pinar Quemado:</strong> <span style="color:var(--green)">${fmt(pq.tot)}</span> (Ef: ${fmt(pq.ef)} | Tr: ${fmt(pq.tr)})</div>`;
+  else det=`<div><strong>${fSuc}:</strong> <span style="color:var(--green)">${fmt(g.tot)}</span> (Ef: ${fmt(g.ef)} | Tr: ${fmt(g.tr)})</div>`;
+  document.getElementById("resumenTiendas").innerHTML=`${det}<div style="margin-top:6px;padding-top:6px;border-top:1px solid #353b48"><strong>TOTAL FACTURADO ${eti}:</strong> <span style="color:#f5b700;font-size:15px">${fmt(g.tot)}</span><br><small style="color:var(--muted)">Pendiente por cobrar en taller: ${fmt(g.pend)}</small></div>`;
+  const [ad,us]=await Promise.all([api("admins?select=*"),api("usuarios_sistema?select=*")]);
+  const l1=(Array.isArray(ad)?ad:[]).map(a=>`<div class="row" style="padding:4px 0;border-bottom:1px solid #2f3640"><span><strong>${a.nombre}</strong> (Admin)</span>${a.nombre!=="Luis"?`<button class="btn-red btn-sm" style="padding:2px 6px;font-size:11px" onclick="borrarUsuarioAdm('admins',${a.id})">X</button>`:""}</div>`).join("");
+  const l2=(Array.isArray(us)?us:[]).map(u=>`<div class="row" style="padding:4px 0;border-bottom:1px solid #2f3640"><span>${u.nombre||u.usuario} (${u.rol||"Empleado"})</span><button class="btn-red btn-sm" style="padding:2px 6px;font-size:11px" onclick="borrarUsuarioAdm('usuarios_sistema',${u.id})">X</button></div>`).join("");
+  document.getElementById("listaUsuariosAdm").innerHTML=l1+l2;
+}
+async function crearUsuarioAdm(){const n=document.getElementById('nuNom').value.trim(),c=document.getElementById('nuClv').value.trim(),r=document.getElementById('nuRol').value;if(!n||!c){alert('Escribe nombre y clave');return;}if(r==='Admin')await api('admins','POST',{nombre:n,clave:c});else await api('usuarios_sistema','POST',{nombre:n,password:c,rol:'Empleado'});document.getElementById('nuNom').value='';document.getElementById('nuClv').value='';cargarPanelAdmin();}
+async function borrarUsuarioAdm(tb,id){if(!confirm('¿Eliminar usuario?'))return;await api(tb+'?id=eq.'+id,'DELETE');cargarPanelAdmin();}
+init();
+</script>
+</body>
+</html>
