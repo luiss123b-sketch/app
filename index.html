@@ -492,12 +492,12 @@ window._normFechaLocal = function(val){
       <div class="row" style="margin-bottom:8px"><div style="flex:1"><small style="color:var(--muted);font-size:11px">Desde:</small><input type="date" id="factDesde" onchange="cargarPanelAdmin()" style="padding:6px;font-size:12px"></div><div style="flex:1"><small style="color:var(--muted);font-size:11px">Hasta:</small><input type="date" id="factHasta" onchange="cargarPanelAdmin()" style="padding:6px;font-size:12px"></div></div>
       <div id="resumenTiendas" style="font-size:13px;line-height:1.6"></div></div>
       </div>
-      <button class="btn-green" style="margin-bottom:12px" onclick="if(confirm('¿Confirmas que deseas realizar el cuadre y cerrar la caja de hoy?'))hacerCuadre()">Hacer Cuadre / Cerrar Caja</button>
+      
     
     <div class="card">
       <h3 style="margin-top:0;color:#f5b700">Buscar Cierres por Sucursal y Fechas</h3>
       <select id="filtroSucCierre" onchange="cargarCuadre()" style="padding:8px;font-size:13px;margin-bottom:6px"><option value="Todas">Todas las sucursales (Medina + Pinar Quemado)</option><option value="Medina">Medina</option><option value="Pinar Quemado">Pinar Quemado</option></select>
-      <div class="row" style="margin-bottom:6px"><div style="flex:1"><small style="color:var(--muted);font-size:11px">Desde:</small><input type="date" id="fDesde" onchange="cargarCuadre()" style="padding:7px;font-size:12px"></div><div style="flex:1"><small style="color:var(--muted);font-size:11px">Hasta:</small><input type="date" id="fHasta" onchange="cargarCuadre()" style="padding:7px;font-size:12px"></div></div>
+      <div class="row" style="margin-bottom:6px"><div style="flex:1"><small style="color:var(--muted);font-size:11px">Desde:</small><input type="date" id="fDesde" onchange="cargarCuadre()" oninput="cargarCuadre()" style="padding:7px;font-size:12px"></div><div style="flex:1"><small style="color:var(--muted);font-size:11px">Hasta:</small><input type="date" id="fHasta" onchange="cargarCuadre()" oninput="cargarCuadre()" onchange="cargarCuadre()" oninput="cargarCuadre()" style="padding:7px;font-size:12px"></div></div>
       <button class="btn-blue btn-sm" style="margin:0 0 8px 0" onclick="document.getElementById('filtroSucCierre').value='Todas';document.getElementById('fDesde').value='';document.getElementById('fHasta').value='';cargarCuadre()">Ver Todo el Tiempo</button>
       <div id="resumenFiltroCierres" style="font-size:12px;color:#f5b700;margin-bottom:6px;font-weight:700"></div>
       <div id="listaCuadres"></div>
@@ -624,7 +624,7 @@ async function cargarCuadre(){
   let q2="cuadres?select=*&order=id.desc&limit=500";
   if(sucF!=="Todas")q2+="&sucursal=eq."+encodeURIComponent(sucF);
   const cData=await api(q2);
-  const normF=s=>{const st=String(s||"").slice(0,10);if(st.includes("/")){const p=st.split("/");return p.reverse().join("-");}return st;};
+  const normF=s=>window._normFechaLocal?window._normFechaLocal(s):String(s||"").slice(0,10);
   const filtrados=(Array.isArray(cData)?cData:[]).filter(c=>{const fc=normF(c.fecha);if(d1&&fc<d1)return false;if(d2&&fc>d2)return false;return true;});
   const totF=filtrados.reduce((a,c)=>a+Number(c.total_ingresos||0)+Number(c.total_transferencia||0),0);
   document.getElementById("resumenFiltroCierres").textContent=`Mostrando ${filtrados.length} cierres • Total filtrado: ${fmt(totF)}`;
@@ -1369,6 +1369,100 @@ document.addEventListener("keydown", function(e){
   const lt = document.getElementById('listaTickets');
   if(lt) new MutationObserver(addVerFichaBtn).observe(lt, {childList: true, subtree: true});
   setInterval(addVerFichaBtn, 900);
+})();
+</script>
+
+<script id="anti-duplicado-v120">
+(function(){
+  let _lockBtnGuardar = false;
+  let _ultimaFirma = { firma: '', ts: 0 };
+
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest('button');
+    if(!btn) return;
+    const txt = (btn.textContent || '').trim();
+    if(!txt.includes('Guardar Orden')) return;
+
+    // 1. Bloquear doble clic / doble toque táctil en iPhone
+    if(_lockBtnGuardar){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      return;
+    }
+
+    // 2. Verificar si todos los datos son idénticos a la orden recién guardada (últimos 60s)
+    const vals = Array.from(document.querySelectorAll('#tabNueva input, #tabNueva select, #tabNueva textarea'))
+      .map(el => (el.value || '').trim().toLowerCase())
+      .join('|');
+    const ahora = Date.now();
+    if(vals && _ultimaFirma.firma === vals && (ahora - _ultimaFirma.ts) < 60000){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      alert('⚠️ Esta misma orden ya acaba de guardarse. Si deseas registrar otro equipo igual, cambia algún dato en Detalles.');
+      return;
+    }
+
+    _lockBtnGuardar = true;
+    _ultimaFirma = { firma: vals, ts: ahora };
+    const orig = btn.innerHTML;
+    btn.style.opacity = '0.65';
+    btn.style.pointerEvents = 'none';
+    btn.textContent = '⏳ Guardando...';
+
+    setTimeout(function(){
+      _lockBtnGuardar = false;
+      btn.style.opacity = '';
+      btn.style.pointerEvents = '';
+      btn.innerHTML = orig;
+    }, 3000);
+  }, true);
+})();
+</script>
+
+<script id="anti-duplicado-v120">
+(function(){
+  let _lockBtnGuardar = false;
+  let _ultimaFirma = { firma: '', ts: 0 };
+
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest('button');
+    if(!btn) return;
+    const txt = (btn.textContent || '').trim();
+    if(!txt.includes('Guardar Orden')) return;
+
+    // 1. Bloquear doble clic / doble toque táctil en iPhone
+    if(_lockBtnGuardar){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      return;
+    }
+
+    // 2. Verificar si todos los datos son idénticos a la orden recién guardada (últimos 60s)
+    const vals = Array.from(document.querySelectorAll('#tabNueva input, #tabNueva select, #tabNueva textarea'))
+      .map(el => (el.value || '').trim().toLowerCase())
+      .join('|');
+    const ahora = Date.now();
+    if(vals && _ultimaFirma.firma === vals && (ahora - _ultimaFirma.ts) < 60000){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      alert('⚠️ Esta misma orden ya acaba de guardarse. Si deseas registrar otro equipo igual, cambia algún dato en Detalles.');
+      return;
+    }
+
+    _lockBtnGuardar = true;
+    _ultimaFirma = { firma: vals, ts: ahora };
+    const orig = btn.innerHTML;
+    btn.style.opacity = '0.65';
+    btn.style.pointerEvents = 'none';
+    btn.textContent = '⏳ Guardando...';
+
+    setTimeout(function(){
+      _lockBtnGuardar = false;
+      btn.style.opacity = '';
+      btn.style.pointerEvents = '';
+      btn.innerHTML = orig;
+    }, 3000);
+  }, true);
 })();
 </script>
 </body>
