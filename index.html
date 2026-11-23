@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><script>const _APP_VER="v133";try{if(localStorage.getItem("_lrc_ver")!==_APP_VER){localStorage.setItem("_lrc_ver",_APP_VER);if(!location.search.includes(_APP_VER)){location.replace(location.pathname+"?v="+_APP_VER);}}}catch(e){}</script>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><script>const _APP_VER="v139";if(!location.search.includes(_APP_VER)){location.replace(location.pathname+"?v="+_APP_VER);}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -94,7 +94,7 @@ body.modo-usuarios #tabUsuariosAdmin { display: block !important; }
 body.modo-usuarios #tabUsuariosAdmin ~ * { display: none !important; }
 
 body:not(.es-admin) .card-entregada .btn-est-rapido { display: none !important; }
-</style>
+body:not(.es-admin) #navTabs .tab[onclick*="Admin"]{display:none!important;}</style>
 
 <style>
 #listaTickets .card b, #listaTickets .card strong, #listaTickets .card span, #listaTickets .card div {
@@ -458,6 +458,8 @@ window._normFechaLocal = function(val){
 }
 </style>
 <style id="permisos-emp-v127">body:not(.es-admin) button[onclick*="Cuadre"],body:not(.es-admin) button[onclick*="cuadre"],body:not(.es-admin) button[onclick*="Usuario"],body:not(.es-admin) button[onclick*="usuario"],body:not(.es-admin) button[onclick*="salirSinCuadrar"],body:not(.es-admin) .solo-admin{display:none!important;}</style>
+<style id="hide-admin-tab-v138">body:not(.es-admin) #navTabs .tab:nth-child(3),body:not(.es-admin) #tabAdmin{display:none!important;}</style>
+<style id="modal-caja-z-v139">#modalCajaHoy{z-index:999999!important;padding-bottom:70px!important;}#modalCajaHoy .card{position:relative;z-index:1000000!important;}#modalCajaHoy button{display:inline-block!important;visibility:visible!important;opacity:1!important;}</style>
 </head>
 <body>
 <header>
@@ -578,7 +580,7 @@ function entrarApp(suc){
   cargarTickets();
 }
 function cerrarSesion(){sessionStorage.removeItem('rc_session');location.reload();}
-function verTab(name,el){
+function verTab(name,el){if(t==='Admin'&&typeof isAdm==='function'&&!isAdm()){t='Ordenes';}
   ['Ordenes','Nueva','Cuadre'].forEach(x=>document.getElementById('tab'+x).classList.add('hidden'));
   document.getElementById('tab'+name).classList.remove('hidden');
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
@@ -1681,7 +1683,7 @@ async function marcarNotaComoLeida(){
   setInterval(resaltarOrdenesConNota, 700);
 })();
 </script>
-<script id="permisos-emp-js-v127">(function(){let _ultAdm=null;function syncAdm(){try{const adm=!!(typeof isAdm==="function"&&isAdm());if(adm===_ultAdm)return;_ultAdm=adm;document.body.classList.toggle("es-admin",adm);document.querySelectorAll("button").forEach(b=>{const tx=(b.textContent||"");if(tx.includes("Cuadres Diarios")||tx.includes("Gestionar Admins")||tx.includes("Salir sin Cuadrar")||tx.trim()==="Admin / Caja"||tx.trim()==="Admin"){if(adm)b.style.removeProperty("display");else b.style.setProperty("display","none","important");}});}catch(e){}}syncAdm();setInterval(syncAdm,800);})();</script>
+<script id="permisos-emp-js-v127">(function(){let _ultAdm=null;function syncAdm(){try{const adm=!!(typeof isAdm==="function"&&isAdm());if(adm===_ultAdm)return;_ultAdm=adm;document.body.classList.toggle("es-admin",adm);document.querySelectorAll("button, nav a, nav div, .nav-item, .tab-btn").forEach(b=>{const tx=(b.textContent||"");if(tx.includes("Cuadres Diarios")||tx.includes("Gestionar Admins")||tx.includes("Salir sin Cuadrar")||tx.trim()==="Admin / Caja"||tx.trim()==="Admin"){if(adm)b.style.removeProperty("display");else b.style.setProperty("display","none","important");}});}catch(e){}}syncAdm();setInterval(syncAdm,800);})();</script>
 <script id="admin-usuarios-js-v129">
 async function editarNombreUsuarioAdm(tabla, id, nomActual){
   if(typeof isAdm !== 'function' || !isAdm()) return;
