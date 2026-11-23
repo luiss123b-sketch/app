@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><script>const _APP_VER="v139";if(!location.search.includes(_APP_VER)){location.replace(location.pathname+"?v="+_APP_VER);}</script>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><script>const _APP_VER="v140";if(!location.search.includes(_APP_VER)){location.replace(location.pathname+"?v="+_APP_VER);}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -580,7 +580,7 @@ function entrarApp(suc){
   cargarTickets();
 }
 function cerrarSesion(){sessionStorage.removeItem('rc_session');location.reload();}
-function verTab(name,el){if(t==='Admin'&&typeof isAdm==='function'&&!isAdm()){t='Ordenes';}
+function verTab(name,el){if((name==='Admin'||name==='Cuadre')&&typeof isAdm==='function'&&!isAdm()){name='Ordenes';}
   ['Ordenes','Nueva','Cuadre'].forEach(x=>document.getElementById('tab'+x).classList.add('hidden'));
   document.getElementById('tab'+name).classList.remove('hidden');
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
