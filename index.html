@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><script>const _APP_VER="v144";if(!location.search.includes(_APP_VER)){location.replace(location.pathname+"?v="+_APP_VER);}</script>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><script>const _APP_VER="v146";if(!location.search.includes(_APP_VER)){location.replace(location.pathname+"?v="+_APP_VER);}</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -479,6 +479,43 @@ window._normFechaLocal = function(val){
     max-height: 2.9em !important;
     line-height: 1.42 !important;
   }
+}
+</style>
+
+<style id="notas-burbujas-v146">
+.nota-burbuja {
+  display: block;
+  background: rgba(56, 189, 248, 0.11);
+  border: 1px solid rgba(56, 189, 248, 0.38);
+  border-radius: 14px 14px 14px 4px;
+  padding: 7px 11px;
+  margin: 6px 0;
+  color: #f1f5f9;
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+.nota-burbuja.pendiente {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.60);
+}
+.nota-burbuja-head {
+  font-size: 11px;
+  color: #7dd3fc;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.nota-burbuja.pendiente .nota-burbuja-head {
+  color: #fbbf24;
+}
+.nota-burbuja-msg {
+  color: #ffffff;
+  font-size: 13px;
+  margin: 2px 0;
+}
+.nota-burbuja-foot {
+  font-size: 10.5px;
+  color: #94a3b8;
+  margin-top: 3px;
 }
 </style>
 </head>
@@ -1229,7 +1266,7 @@ document.addEventListener("keydown", function(e){
   }
 });
 </script>
-<div id="modalFicha" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px"><div class="card" style="width:100%;max-width:480px;border:2px solid #f5b700;max-height:85vh;overflow-y:auto"><div class="row"><h3 id="mfTitulo" style="margin:0;color:#f5b700">Ficha</h3><button class="btn-red btn-sm" style="margin:0" onclick="document.getElementById('modalFicha').classList.add('hidden')">X</button></div><div id="mfBody" style="font-size:14px;line-height:1.65;margin-top:10px"></div></div></div><div id="modalEdit" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:55;display:flex;align-items:center;justify-content:center;padding:16px"><div class="card" style="width:100%;max-width:480px;border:2px solid #8c7ae6;max-height:90vh;overflow-y:auto"><div class="row"><h3 id="meTitulo" style="margin:0;color:#f5b700">Editar Ficha</h3><button class="btn-red btn-sm" style="margin:0" onclick="document.getElementById('modalEdit').classList.add('hidden')">X</button></div><input type="hidden" id="meId"><div class="row" style="gap:8px;margin-bottom:4px;"><div style="flex:1;"><label>👤 Nombre del Cliente</label><input id="meCliNombre" placeholder="Nombre del cliente"></div><div style="flex:1;"><label>📞 Teléfono del Cliente</label><input id="meCliTel" placeholder="Teléfono"></div></div><label>Dispositivo / Artículo</label><input id="meDisp"><label>Falla / Diagnóstico</label><input id="meFalla"><label>Detalles / Notas actuales</label><input id="meDesc"><label>Agregar Nota / Actualización (opcional)</label><input id="meNota" placeholder="Ej: Se cambió batería también"><div class="row"><div style="flex:1"><label>Precio Total (RD$)</label><input type="number" id="meTot" step="0.01"></div><div style="flex:1"><label>Agregar Abono (RD$)</label><input type="number" id="meAbono" value="0" step="0.01"></div></div><div class="row"><div style="flex:1"><label>Estado</label><select id="meEst"><option value="En espera">En espera</option><option value="En reparación">En reparación</option><option value="Confirmación de cliente">Confirmación de cliente</option><option value="En espera de Pieza">En espera de Pieza</option><option value="Listo">Listo</option><option value="Revisión de Garantía">Revisión de Garantía</option><option value="ENTREGADO">ENTREGADO</option></select></div><div style="flex:1"><label>Método de Pago</label><select id="mePago"><option value="Efectivo">Efectivo</option><option value="Transferencia">Transferencia</option><option value="Pendiente">Pendiente</option></select></div></div><div id="mePassBox" class="hidden"><label style="color:#f5b700">Contraseña del empleado para autorizar</label><input type="password" id="mePass" placeholder="Tu clave"></div><button class="btn-green" onclick="guardarEdicionFicha()">Guardar Cambios</button></div></div>
+<div id="modalFicha" class="hidden" onclick="if(event.target===this)this.classList.add('hidden')" style="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;"><div class="card" style="width:100%;max-width:480px;border:2px solid #f5b700;max-height:82vh;overflow-y:auto"><div class="row" style="align-items:center;"><h3 id="mfTitulo" style="margin:0;color:#f5b700">Ficha</h3><button type="button" class="btn-red btn-sm" style="margin:0;padding:6px 12px;font-weight:800;" onclick="document.getElementById('modalFicha').classList.add('hidden')">✕ Cerrar</button></div><div id="mfBody" style="font-size:14px;line-height:1.65;margin-top:10px"></div><div style="margin-top:14px;"><button type="button" class="btn-red" style="width:100%;padding:10px;font-weight:800;border-radius:8px;" onclick="document.getElementById('modalFicha').classList.add('hidden')">← Volver / Cerrar Orden</button></div></div></div><div id="modalEdit" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:55;display:flex;align-items:center;justify-content:center;padding:16px"><div class="card" style="width:100%;max-width:480px;border:2px solid #8c7ae6;max-height:90vh;overflow-y:auto"><div class="row"><h3 id="meTitulo" style="margin:0;color:#f5b700">Editar Ficha</h3><button class="btn-red btn-sm" style="margin:0" onclick="document.getElementById('modalEdit').classList.add('hidden')">X</button></div><input type="hidden" id="meId"><div class="row" style="gap:8px;margin-bottom:4px;"><div style="flex:1;"><label>👤 Nombre del Cliente</label><input id="meCliNombre" placeholder="Nombre del cliente"></div><div style="flex:1;"><label>📞 Teléfono del Cliente</label><input id="meCliTel" placeholder="Teléfono"></div></div><label>Dispositivo / Artículo</label><input id="meDisp"><label>Falla / Diagnóstico</label><input id="meFalla"><label>Detalles / Notas actuales</label><input id="meDesc"><label>Agregar Nota / Actualización (opcional)</label><input id="meNota" placeholder="Ej: Se cambió batería también"><div class="row"><div style="flex:1"><label>Precio Total (RD$)</label><input type="number" id="meTot" step="0.01"></div><div style="flex:1"><label>Agregar Abono (RD$)</label><input type="number" id="meAbono" value="0" step="0.01"></div></div><div class="row"><div style="flex:1"><label>Estado</label><select id="meEst"><option value="En espera">En espera</option><option value="En reparación">En reparación</option><option value="Confirmación de cliente">Confirmación de cliente</option><option value="En espera de Pieza">En espera de Pieza</option><option value="Listo">Listo</option><option value="Revisión de Garantía">Revisión de Garantía</option><option value="ENTREGADO">ENTREGADO</option></select></div><div style="flex:1"><label>Método de Pago</label><select id="mePago"><option value="Efectivo">Efectivo</option><option value="Transferencia">Transferencia</option><option value="Pendiente">Pendiente</option></select></div></div><div id="mePassBox" class="hidden"><label style="color:#f5b700">Contraseña del empleado para autorizar</label><input type="password" id="mePass" placeholder="Tu clave"></div><button class="btn-green" onclick="guardarEdicionFicha()">Guardar Cambios</button></div></div>
 <style>
 .sug-box { position: relative; }
 .sug-list { position: absolute; left: 0; right: 0; top: 100%; z-index: 9999; background: #181d27; border: 1px solid #f5b700; border-radius: 8px; max-height: 185px; overflow-y: auto; box-shadow: 0 8px 20px rgba(0,0,0,0.65); display: none; }
@@ -1758,6 +1795,72 @@ setInterval(function(){
     cont.dataset.v129Done = '1';
   });
 }, 900);
+</script>
+
+<script id="notas-burbujas-js-v146">
+function formatearNotasEnBurbujas(texto){
+  if(!texto || (!texto.includes('[NOTA PENDIENTE') && !texto.includes('[NOTA LEÍDA'))) return null;
+  const partes = texto.split(/\s*\|\s*/);
+  const htmlPartes = partes.map(p => {
+    const s = p.trim();
+    if(!s) return '';
+    let mLeida = s.match(/^\[NOTA LEÍDA\s*\(([^)]+)\)\s*•\s*([^•\]]+)\s*•\s*([^\]]+)\]:\s*(.*)$/);
+    if(mLeida){
+      const leidaInfo = mLeida[1].trim();
+      const fechaCrea = mLeida[2].trim();
+      const autor = mLeida[3].trim();
+      const msg = mLeida[4].trim();
+      return '<div class="nota-burbuja">' +
+               '<div class="nota-burbuja-head">💬 Nota — ' + autor + ' • ' + fechaCrea + '</div>' +
+               '<div class="nota-burbuja-msg">' + msg + '</div>' +
+               '<div class="nota-burbuja-foot">✅ Leída (' + leidaInfo + ')</div>' +
+             '</div>';
+    }
+    let mPend = s.match(/^\[NOTA PENDIENTE\s*•\s*([^•\]]+)\s*•\s*([^\]]+)\]:\s*(.*)$/);
+    if(mPend){
+      const fechaCrea = mPend[1].trim();
+      const autor = mPend[2].trim();
+      const msg = mPend[3].trim();
+      return '<div class="nota-burbuja pendiente">' +
+               '<div class="nota-burbuja-head">💬 Nota — ' + autor + ' • ' + fechaCrea + '</div>' +
+               '<div class="nota-burbuja-msg">' + msg + '</div>' +
+               '<div class="nota-burbuja-foot">🔔 Pendiente de leer</div>' +
+             '</div>';
+    }
+    return '<div>' + s + '</div>';
+  });
+  return htmlPartes.join('');
+}
+
+(function(){
+  function aplicarBurbujas(){
+    document.querySelectorAll('#listaTickets .card.ticket > div[style*="font-size:12px;color:var(--muted)"]').forEach(el => {
+      if(el.dataset.burbujaDone === '1') return;
+      const raw = el.textContent || '';
+      const fmt = formatearNotasEnBurbujas(raw);
+      if(fmt){
+        el.innerHTML = fmt;
+        el.dataset.burbujaDone = '1';
+      }
+    });
+    const mf = document.getElementById('mfBody');
+    if(mf && mf.dataset.burbujaRaw !== mf.textContent){
+      const rawMf = mf.innerHTML;
+      if(rawMf.includes('[NOTA PENDIENTE') || rawMf.includes('[NOTA LEÍDA')){
+        mf.innerHTML = rawMf.replace(/(\|\s*)?\[NOTA (?:PENDIENTE|LEÍDA)[^\]]*\][^<|\n]*/g, function(match){
+          const limpio = match.replace(/^\|\s*/, '').trim();
+          return formatearNotasEnBurbujas(limpio) || match;
+        });
+      }
+      mf.dataset.burbujaRaw = mf.textContent;
+    }
+  }
+  const lt = document.getElementById('listaTickets');
+  if(lt) new MutationObserver(aplicarBurbujas).observe(lt, {childList:true, subtree:true});
+  const mf = document.getElementById('mfBody');
+  if(mf) new MutationObserver(aplicarBurbujas).observe(mf, {childList:true, subtree:true});
+  setInterval(aplicarBurbujas, 600);
+})();
 </script>
 </body>
 </html>
