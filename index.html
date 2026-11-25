@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><script>const _APP_VER="v152";if(!location.search.includes(_APP_VER)){location.replace(location.pathname+"?v="+_APP_VER);}</script>
@@ -745,7 +745,7 @@ async function cargarCuadre(){
   const sucCaja=document.getElementById("filtroSuc").value;
   const data=await api("tickets?select=total,estado,descripcion,sucursal,metodo_pago&cuadre_id=is.null");
   const arr=Array.isArray(data)?data:[];
-  const calcCaja=s=>{let ef=0,tr=0;arr.filter(x=>s==="Todas"||x.sucursal===s).forEach(x=>{if(x.estado==="SALIDA_CAJA"){ef+=Number(x.total||0);return;}let m=0;if(x.estado==="ENTREGADO")m=Number(x.total||0);else if(String(x.descripcion||"").includes("ABONO")){const r=String(x.descripcion).match(/ABONO[^0-9]*([0-9.]+)/i);if(r)m=Number(r.pop()||0);}if(String(x.metodo_pago||"").toLowerCase().includes("transf"))tr+=m;else ef+=m;});return {ef,tr,tot:ef+tr};};
+  const calcCaja=s=>{let ef=0,tr=0;arr.filter(x=>s==="Todas"||x.sucursal===s).forEach(x=>{if(x.estado==="SALIDA_CAJA"){ef+=Number(x.total||0);return;}let m=0;if(x.estado==="ENTREGADO")m=Number(x.total||0);else if(String(x.descripcion||"").includes("ABONO")){const r=String(x.descripcion).match(/RD\$?\s*([0-9.]+)/i);if(r)m=Number(r.pop()||0);}if(String(x.metodo_pago||"").toLowerCase().includes("transf"))tr+=m;else ef+=m;});return {ef,tr,tot:ef+tr};};
   const fmt=n=>"RD$ "+n.toLocaleString("en-US",{minimumFractionDigits:2});
   if(isAdm()){
     document.getElementById("admCuadreBox")?.classList.remove("hidden");
@@ -772,7 +772,7 @@ async function hacerCuadre(){
   const suc=document.getElementById("filtroSuc").value;if(suc==="Todas"){alert("Selecciona Medina o Pinar Quemado arriba para cuadrar.");return;}
   if(!confirm("¿Cerrar caja ahora para "+suc+"?"))return;
   const data=await api("tickets?select=*&cuadre_id=is.null&sucursal=eq."+encodeURIComponent(suc));let ef=0,tr=0;
-  (Array.isArray(data)?data:[]).forEach(x=>{let m=0;if(x.estado==="ENTREGADO")m=Number(x.total||0);else if(String(x.descripcion||"").includes("ABONO")){const r=String(x.descripcion).match(/ABONO[^0-9]*([0-9.]+)/i);if(r)m=Number(r.pop()||0);}if(String(x.metodo_pago||"").toLowerCase().includes("transf"))tr+=m;else ef+=m;});
+  (Array.isArray(data)?data:[]).forEach(x=>{let m=0;if(x.estado==="ENTREGADO")m=Number(x.total||0);else if(String(x.descripcion||"").includes("ABONO")){const r=String(x.descripcion).match(/RD\$?\s*([0-9.]+)/i);if(r)m=Number(r.pop()||0);}if(String(x.metodo_pago||"").toLowerCase().includes("transf"))tr+=m;else ef+=m;});
   const now=new Date(),fec=now.toLocaleDateString("es-DO")+" "+now.toLocaleTimeString("es-DO",{hour:"2-digit",minute:"2-digit"});
   const res=await api("cuadres","POST",{sucursal:suc,fecha:fec,cerrado_por:uName(usuarioActual),total_ingresos:ef,total_transferencia:tr});
   const nid=Array.isArray(res)?res.at(0)?.id:res?.id;
@@ -804,8 +804,8 @@ async function cargarPanelAdmin(){
   const calc=s=>{
     let ef=0,tr=0,pend=0;
     cArr.filter(c=>(s==="Todas"||c.sucursal===s)&&enRango(c.fecha)).forEach(c=>{ef+=Number(c.total_ingresos||0);tr+=Number(c.total_transferencia||0);});
-    tArr.filter(t=>(s==="Todas"||t.sucursal===s)&&!t.cuadre_id&&enRango(t.fecha)).forEach(t=>{let m=0;if(t.estado==="ENTREGADO")m=Number(t.total||0);else if(String(t.descripcion||"").includes("ABONO")){const r=String(t.descripcion).match(/ABONO[^0-9]*([0-9.]+)/i);if(r)m=Number(r.pop()||0);}if(String(t.metodo_pago||"").toLowerCase().includes("transf"))tr+=m;else ef+=m;});
-    tArr.filter(t=>(s==="Todas"||t.sucursal===s)&&t.estado!=="ENTREGADO"&&enRango(t.fecha)).forEach(t=>{let ab=0;const r=String(t.descripcion||"").match(/ABONO[^0-9]*([0-9.]+)/i);if(r)ab=Number(r.pop()||0);pend+=Math.max(0,Number(t.total||0)-ab);});
+    tArr.filter(t=>(s==="Todas"||t.sucursal===s)&&!t.cuadre_id&&enRango(t.fecha)).forEach(t=>{let m=0;if(t.estado==="ENTREGADO")m=Number(t.total||0);else if(String(t.descripcion||"").includes("ABONO")){const r=String(t.descripcion).match(/RD\$?\s*([0-9.]+)/i);if(r)m=Number(r.pop()||0);}if(String(t.metodo_pago||"").toLowerCase().includes("transf"))tr+=m;else ef+=m;});
+    tArr.filter(t=>(s==="Todas"||t.sucursal===s)&&t.estado!=="ENTREGADO"&&enRango(t.fecha)).forEach(t=>{let ab=0;const r=String(t.descripcion||"").match(/RD\$?\s*([0-9.]+)/i);if(r)ab=Number(r.pop()||0);pend+=Math.max(0,Number(t.total||0)-ab);});
     return {ef,tr,tot:ef+tr,pend};
   };
   const m=calc("Medina"),pq=calc("Pinar Quemado"),g=calc(fSuc),fmt=n=>"RD$ "+n.toLocaleString("en-US",{minimumFractionDigits:2});
@@ -819,14 +819,14 @@ async function cargarPanelAdmin(){
     let m = 0;
     if (t.estado === "ENTREGADO") m = Number(t.total || 0);
     else if (String(t.descripcion || "").includes("ABONO")) {
-      const r = String(t.descripcion).match(/ABONO[^0-9]*([0-9.]+)/i);
+      const r = String(t.descripcion).match(/RD\$?\s*([0-9.]+)/i);
       if (r) m = Number(r.at(1) || 0);
     }
     return m > 0;
   }).map(t => {
     let m = Number(t.total || 0);
     if (t.estado !== "ENTREGADO") {
-      const r = String(t.descripcion).match(/ABONO[^0-9]*([0-9.]+)/i);
+      const r = String(t.descripcion).match(/RD\$?\s*([0-9.]+)/i);
       if (r) m = Number(r.at(1) || 0);
     }
     const cli = (t.clientes && t.clientes.nombre) ? t.clientes.nombre : (t.cliente_nombre || "Cliente");
@@ -952,7 +952,7 @@ async function abrirCajaHoyModal(){
       if(est === "SALIDA_CAJA"){ const mSal = Math.abs(Number(t.total || 0)); salidas += mSal; filasSal += `<div style="border-bottom:1px solid #3a2328;padding:4px 0;color:#ff8787;">💸 <b>-RD$ ${mSal.toFixed(2)}</b> • ${t.fallo || "Salida"} <small style="color:#a4b0be;">(${t.vendedor || ""} • ${t.fecha || ""})</small></div>`; return; }
       let monto = 0;
       if(est === "ENTREGADO") monto = Number(t.total || 0);
-      else if(String(t.descripcion||"").includes("ABONO")){ const r = String(t.descripcion).match(/ABONO[^0-9]*([0-9.]+)/i); if(r) monto = Number(r.at(1) || 0); pend += Math.max(0, Number(t.total || 0) - monto); }
+      else if(String(t.descripcion||"").includes("ABONO")){ const r = String(t.descripcion).match(/RD\$?\s*([0-9.]+)/i); if(r) monto = Number(r.at(1) || 0); pend += Math.max(0, Number(t.total || 0) - monto); }
       else { pend += Number(t.total || 0); }
       if(monto > 0){ if(String(t.metodo_pago||"").toLowerCase().includes("transf")) tr += monto; else ef += monto; filasIng += `<div style="border-bottom:1px solid #2d333f;padding:4px 0;">#${t.orden_sucursal||t.numero_orden} • ${t.dispositivo||""} — <b style="color:#2ecc71;">RD$ ${monto.toFixed(2)}</b> (${t.metodo_pago||"Efectivo"})</div>`; }
     });
@@ -1765,3 +1765,5 @@ function formatearNotasEnBurbujas(texto){
 </script>
 </body>
 </html>
+
+<script id="PARCHE_ABONO_OK">(function(){document.addEventListener("click",function(e){const btn=e.target.closest("button");if(!btn||!btn.innerText.includes("Guardar Cambios"))return;const modal=btn.closest(".modal,[id*=modal],[id*=Modal]")||document;const inputs=Array.from(modal.querySelectorAll("input"));let inpAbono=null,inpTotal=null;for(const inp of inputs){const lbl=(inp.previousElementSibling?.innerText||inp.parentElement?.innerText||inp.placeholder||"").toLowerCase();if(lbl.includes("abono"))inpAbono=inp;if(lbl.includes("precio total")||lbl==="total")inpTotal=inp;}const abono=inpAbono?parseFloat(inpAbono.value||"0"):0;if(abono>0&&inpTotal){const totActual=parseFloat(inpTotal.value||"0");inpTotal.value=Math.max(0,totActual-abono).toFixed(2);inpTotal.dispatchEvent(new Event("input",{bubbles:true}));inpTotal.dispatchEvent(new Event("change",{bubbles:true}));setTimeout(()=>{if(inpAbono)inpAbono.value="";},400);}},true);})();</script>
